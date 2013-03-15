@@ -22,10 +22,6 @@ class ThreePointStudio_UsergroupRanks_Listener_Listener {
 		}
 	}
 
-	public static function loadClassDataWriter($class, array &$extend) {
-		$extend[] = 'ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks';
-	}
-
 	public static function template_hook($hookName, &$contents, array $hookParams, XenForo_Template_Abstract $template) {
 		$options = XenForo_Application::get('options');
 		if ($hookName == 'member_view') {
