@@ -1,11 +1,11 @@
 <?php
+/*
+* Usergroup Ranks v1.0.0 written by tyteen4a03@3.studIo.
+* This software is licensed under the BSD 2-Clause modified License.
+* See the LICENSE file within the package for details.
+*/
 
-/**
- * Usergroup Rank Model.
- *
- * @package XenForo_UserGroups
- */
-class ThreePointStudio_UserGroupRank_Model_UserGroupRank extends XenForo_Model {
+class ThreePointStudio_UserGroupRanks_Model_UserGroupRanks extends XenForo_Model {
 
 	public function getUserGroupRanksByIds($userGroupIds) {
 		if (!$userGroupIds) {
@@ -13,6 +13,15 @@ class ThreePointStudio_UserGroupRank_Model_UserGroupRank extends XenForo_Model {
 		}
 
 		return $this->fetchAllKeyed('SELECT * FROM 3ps_usergroup_ranks WHERE rank_usergroup IN (' . $this->_getDb()->quote($userGroupIds) . ') ORDER BY rid', 'rid');
+	}
+
+	/**
+	* Gets all usergroup ranks.
+	*
+	* @return array Format: [user group id] => info
+	*/
+	public function getAllUserGroupRanks() {
+		return $this->fetchAllKeyed('SELECT * FROM 3ps_usergroup_ranks ORDER BY rid', 'rid');
 	}
 
 	/**
@@ -32,14 +41,15 @@ class ThreePointStudio_UserGroupRank_Model_UserGroupRank extends XenForo_Model {
 		}
 	}
 
-	public function insertNewUserGroupRank($rankType, $userGroupId, $active, $content, $displayCondition, $stylingPriorityLimit) {
-		$dw = XenForo_DataWriter::create('ThreePointStudio_UsergroupRank_DataWriter_UserGroupRanks');
-		$dw->set('rank_type', $rankType);
-		$dw->set('rank_usergroup', $userGroupId);
-		$dw->set('rank_active', $active);
-		$dw->set('rank_content', $content);
-		$dw->set('rank_display_condition', $displayCondition);
-		$dw->set('rank_styling_priority_limit', $stylingPriorityLimit);
+	public function insertNewUserGroupRank($input) {
+		$dw = XenForo_DataWriter::create('ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks');
+		$dw->setExistingData('rid', $input['rid']);
+		$dw->set('rank_type', $input['rank_type']);
+		$dw->set('rank_usergroup', $input['rank_usergroup']);
+		$dw->set('rank_active', $input['active']);
+		$dw->set('rank_content', $input['rank_content']);
+		$dw->set('rank_display_condition', $input['rank_display_condition']);
+		$dw->set('rank_styling_priority_limit', $input['rank_styling_priority_limit']);
 		$dw->save();
 	}
 }

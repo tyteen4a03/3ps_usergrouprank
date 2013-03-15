@@ -1,10 +1,11 @@
 <?php
+/*
+* Usergroup Ranks v1.0.0 written by tyteen4a03@3.studIo.
+* This software is licensed under the BSD 2-Clause modified License.
+* See the LICENSE file within the package for details.
+*/
 
-/**
- * Route prefix handler for user group promotions in the admin control panel.
- */
-class ThreePointStudio_UsergroupRanks_Route_PrefixAdmin_UserGroupRanks implements XenForo_Route_Interface
-{
+class ThreePointStudio_UsergroupRanks_Route_PrefixAdmin_UserGroupRanks implements XenForo_Route_Interface {
 	/**
 	 * Match a specific route for an already matched prefix.
 	 *
@@ -12,7 +13,7 @@ class ThreePointStudio_UsergroupRanks_Route_PrefixAdmin_UserGroupRanks implement
 	 */
 	public function match($routePath, Zend_Controller_Request_Http $request, XenForo_Router $router) {
 		$action = $router->resolveActionWithIntegerParam($routePath, $request, 'rid');
-		return $router->getRouteMatch('ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks', $action, '3psUsergroupRanks');
+		return $router->getRouteMatch('ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks', $action, /*'3psUsergroupRanks'*/'');
 	}
 
 	/**

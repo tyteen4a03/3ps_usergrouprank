@@ -1,9 +1,8 @@
 <?php
-
-/**
-* Data writer for user groups.
-*
-* @package XenForo_UserGroups
+/*
+* Usergroup Ranks v1.0.0 written by tyteen4a03@3.studIo.
+* This software is licensed under the BSD 2-Clause modified License.
+* See the LICENSE file within the package for details.
 */
 
 /*
@@ -15,7 +14,8 @@
 * 0 - at all times (default), 1 - if styling priority is the highest (not implemented yet),
 * 2 - if styling priority is higher than a defined value (not implemented yet)
 */
-class ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks extends XFCP_ThreePointStudio_UsergroupRank_DataWriter_UserGroupRank {
+
+class ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks extends XFCP_ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks {
 	/**
 	* Gets the fields that are defined for the table. See parent for explanation.
 	*
