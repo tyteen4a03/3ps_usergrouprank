@@ -12,7 +12,7 @@ class ThreePointStudio_UserGroupRanks_Model_UserGroupRanks extends XenForo_Model
 			return array();
 		}
 
-		return $this->fetchAllKeyed('SELECT * FROM 3ps_usergroup_ranks WHERE rank_usergroup IN (' . $this->_getDb()->quote($userGroupIds) . ') ORDER BY rid', 'rid');
+		return $this->fetchAllKeyed('SELECT * FROM 3ps_usergroup_ranks WHERE rank_usergroup IN (?) ORDER BY rid', 'rid', $userGroupIds);
 	}
 
 	/**
@@ -31,25 +31,27 @@ class ThreePointStudio_UserGroupRanks_Model_UserGroupRanks extends XenForo_Model
 	*
 	* @return array Format: [user group id] => info
 	*/
-	public function getUserGroupRankById($userGroupId)
-	{
-		$usergroupRank = $this->getUserGroupRanksByIds($userGroupId);
-		if (isset($usergroupRank[$userGroupId])) {
-			return $usergroupRank[$userGroupId];
-		} else {
-			return;
-		}
+	public function getUserGroupRankById($userGroupId) {
+		return $this->_getDb()->fetchRow('SELECT * FROM 3ps_usergroup_ranks WHERE rid = ?', $userGroupId);
 	}
 
 	public function insertNewUserGroupRank($input) {
 		$dw = XenForo_DataWriter::create('ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks');
-		$dw->setExistingData('rid', $input['rid']);
-		$dw->set('rank_type', $input['rank_type']);
-		$dw->set('rank_usergroup', $input['rank_usergroup']);
-		$dw->set('rank_active', $input['active']);
-		$dw->set('rank_content', $input['rank_content']);
-		$dw->set('rank_display_condition', $input['rank_display_condition']);
-		$dw->set('rank_styling_priority_limit', $input['rank_styling_priority_limit']);
+		if ($input['rid'] && $input['rid'] > 0) {
+			$dw->setExistingData($input['rid']);
+		}
+		$dw->bulkSet($input);
 		$dw->save();
+	}
+
+	/**
+	 * Gets the list of possible extra user groups in "option" format.
+	 *
+	 * @param string|array $groupIds List of existing extra group IDs; may be serialized.
+	 *
+	 * @return array List of user group options (keys: label, value, selected)
+	 */
+	public function getUserGroupOptions($groupIds) {
+		return $this->getModelFromCache('XenForo_Model_UserGroup')->getUserGroupOptions($groupIds);
 	}
 }

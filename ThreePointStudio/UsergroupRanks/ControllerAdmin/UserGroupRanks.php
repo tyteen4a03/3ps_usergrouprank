@@ -12,8 +12,12 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UserGroupRanks extends Xen
 	 * @return XenForo_ControllerResponse_Abstract
 	 */
 	public function actionIndex() {
+		$userGroupRanks = $this->_getCustomUserGroupRankModel()->getAllUserGroupRanks();
+		foreach ($userGroupRanks as &$userGroupRank) {
+			$userGroupRank['content_render'] = ($userGroupRank['rank_type'] === 0) ? '<img src="' . $userGroupRank["rank_content"] . '" />' : $userGroupRank["rank_content"];
+		}
 		$viewParams = array(
-			'userGroupRanks' => $this->_getCustomUserGroupRankModel()->getAllUserGroupRanks()
+			'userGroupRanks' => $userGroupRanks,
 		);
 
 		return $this->responseView('ThreePointStudio_UsergroupRank_ViewAdmin_UsergroupRank_List', '3ps_usergroup_ranks_list', $viewParams);
@@ -26,25 +30,37 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UserGroupRanks extends Xen
 	*/
 	public function actionEdit() {
 		$userGroupRankId = $this->_input->filterSingle('rid', XenForo_Input::UINT);
-		$userGroupRank = $this->_getCustomUserGroupRankModelOrError($userGroupRankId);
-
+		$userGroupRank = $this->_getCustomUserGroupRankOrError($userGroupRankId);
+		$userGroupOptions = $this->_getCustomUserGroupRankModel()->getUserGroupOptions($userGroupRank["rank_usergroup"]);
 		$viewParams = array(
 			'userGroupRank' => $userGroupRank,
+			'userGroupOptions' => $userGroupOptions,
 		);
 
 		return $this->responseView('ThreePointStudio_UsergroupRank_ViewAdmin_UsergroupRank_Edit', '3ps_usergroup_ranks_edit', $viewParams);
 	}
 
 	public function actionAdd() {
-		$viewParams = array();
+		$userGroupOptions = $this->_getCustomUserGroupRankModel()->getUserGroupOptions(0);
+		$viewParams = array(
+			'userGroupOptions' => $userGroupOptions,
+		);
 		return $this->responseView('ThreePointStudio_UsergroupRank_ViewAdmin_UsergroupRank_Edit', '3ps_usergroup_ranks_edit', $viewParams);
 	}
 
 	public function actionDelete() {
-		$viewParams = array(
-			'userGroupRank' => $userGroupRank,
-		);
-		return $this->responseView('ThreePointStudio_UsergroupRank_ViewAdmin_UsergroupRank_Add', '3ps_usergroup_ranks_delete', $viewParams);
+		$userGroupRankId = $this->_input->filterSingle('rid', XenForo_Input::UINT);
+		if ($this->isConfirmedPost()) {
+			return $this->_deleteData('ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks', 'rid', XenForo_Link::buildAdminLink('3ps-usergroup-ranks'));
+		} else {
+			$userGroupRank = $this->_getCustomUserGroupRankOrError($userGroupRankId);
+			$userGroupRankContent = ($userGroupRank['rank_type'] === 0) ? '<img src="' . $userGroupRank["rank_content"] . '" />' : $userGroupRank["rank_content"];
+			$viewParams = array(
+				'userGroupRankId' => $userGroupRankId,
+				'userGroupRankContent' => $userGroupRankContent
+			);
+			return $this->responseView('ThreePointStudio_UsergroupRank_ViewAdmin_UsergroupRank_Edit', '3ps_usergroup_ranks_delete', $viewParams);
+		}
 	}
 
 	/**
@@ -57,7 +73,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UserGroupRanks extends Xen
 
 		$input = $this->_input->filter(array(
 				'rank_type' => XenForo_Input::UINT,
-				'rank_usergroup' => XenForo_Input::STRING,
+				'rank_usergroup' => array(XenForo_Input::UINT, 'array' => true),
 				'rank_active' => XenForo_Input::BINARY,
 				'rank_content' => XenForo_Input::STRING,
 				'rank_display_condition' => XenForo_Input::UINT,
@@ -91,10 +107,10 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UserGroupRanks extends Xen
 	*
 	* @return array
 	*/
-	protected function _getCustomUserGroupRankModelOrError($userGroupRankId) {
-		$userGroup = $this->getModelFromCache('ThreePointStudio_UserGroupRanks_Model_UserGroupRanks')->getUserGroupRankById($userGroupRankId);
+	protected function _getCustomUserGroupRankOrError($userGroupRankId) {
+		$userGroup = $this->_getCustomUserGroupRankModel()->getUserGroupRankById($userGroupRankId);
 		if (!$userGroup) {
-			throw $this->responseException($this->responseError(new XenForo_Phrase('requested_usergroup_rank_not_found'), 404));
+			throw $this->responseException($this->responseError(new XenForo_Phrase('3ps_usergroup_ranks_requested_usergroup_rank_not_found'), 404));
 		}
 
 		return $userGroup;

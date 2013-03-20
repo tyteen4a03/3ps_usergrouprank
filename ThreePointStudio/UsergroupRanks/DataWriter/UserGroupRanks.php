@@ -16,20 +16,48 @@
 */
 
 class ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks extends XenForo_DataWriter {
+
+	var $fields = array(
+		"3ps_usergroup_ranks" => array(
+			"rid" => array(
+				'type' => self::TYPE_UINT,
+				'autoIncrement' => true
+			),
+			"rank_type" => array(
+				'type' => self::TYPE_UINT,
+				'default' => 0
+			),
+			"rank_usergroup" => array(
+				'type' => self::TYPE_UNKNOWN,
+				'default' => '',
+				'verification' => array('XenForo_DataWriter_Helper_User', 'verifyExtraUserGroupIds')
+			),
+			"rank_active" => array(
+				'type' => self::TYPE_BOOLEAN,
+				'default' => 1
+			),
+			"rank_content" => array(
+				'type' => self::TYPE_STRING,
+				'default' => ""
+			),
+			"rank_display_condition" => array(
+				'type' => self::TYPE_UINT,
+				'default' => 0
+			),
+			"rank_styling_priority_limit" => array(
+				'type' => self::TYPE_UINT,
+				'default' => 0
+			)
+		)
+	);
+
 	/**
 	* Gets the fields that are defined for the table. See parent for explanation.
 	*
 	* @return array
 	*/
 	protected function _getFields() {
-		$fields['3ps_usergroup_ranks']['rid'] = array('type' => self::TYPE_UINT, 'autoIncrement' => true);
-		$fields['3ps_usergroup_ranks']['rank_type'] = array('type' => self::TYPE_UINT, 'default' => 0);
-		$fields['3ps_usergroup_ranks']['rank_usergroup'] = array('type' => self::TYPE_STRING);
-		$fields['3ps_usergroup_ranks']['rank_active'] = array('type' => self::TYPE_UINT, 'default' => 1);
-		$fields['3ps_usergroup_ranks']['rank_content'] = array('type' => self::TYPE_STRING, 'default' => "");
-		$fields['3ps_usergroup_ranks']['rank_display_condition'] = array('type' => self::TYPE_UINT, 'default' => 0);
-		$fields['3ps_usergroup_ranks']['rank_styling_priority_limit'] = array('type' => self::TYPE_UINT, 'default' => 0);
-		return $fields;
+		return $this->fields;
 	}
 
 	protected function _getExistingData($data) {
