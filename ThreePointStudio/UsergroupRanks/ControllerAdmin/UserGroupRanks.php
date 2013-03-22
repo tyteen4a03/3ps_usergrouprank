@@ -20,7 +20,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UserGroupRanks extends Xen
 			'userGroupRanks' => $userGroupRanks,
 		);
 
-		return $this->responseView('ThreePointStudio_UsergroupRank_ViewAdmin_UsergroupRank_List', '3ps_usergroup_ranks_list', $viewParams);
+		return $this->responseView('ThreePointStudio_UsergroupRanks_ViewAdmin_UsergroupRanks_List', '3ps_usergroup_ranks_list', $viewParams);
 	}
 
 	/**
@@ -37,7 +37,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UserGroupRanks extends Xen
 			'userGroupOptions' => $userGroupOptions,
 		);
 
-		return $this->responseView('ThreePointStudio_UsergroupRank_ViewAdmin_UsergroupRank_Edit', '3ps_usergroup_ranks_edit', $viewParams);
+		return $this->responseView('ThreePointStudio_UsergroupRanks_ViewAdmin_UsergroupRanks_Edit', '3ps_usergroup_ranks_edit', $viewParams);
 	}
 
 	public function actionAdd() {
@@ -45,7 +45,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UserGroupRanks extends Xen
 		$viewParams = array(
 			'userGroupOptions' => $userGroupOptions,
 		);
-		return $this->responseView('ThreePointStudio_UsergroupRank_ViewAdmin_UsergroupRank_Edit', '3ps_usergroup_ranks_edit', $viewParams);
+		return $this->responseView('ThreePointStudio_UsergroupRanks_ViewAdmin_UsergroupRanks_Edit', '3ps_usergroup_ranks_edit', $viewParams);
 	}
 
 	public function actionDelete() {
@@ -59,7 +59,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UserGroupRanks extends Xen
 				'userGroupRankId' => $userGroupRankId,
 				'userGroupRankContent' => $userGroupRankContent
 			);
-			return $this->responseView('ThreePointStudio_UsergroupRank_ViewAdmin_UsergroupRank_Edit', '3ps_usergroup_ranks_delete', $viewParams);
+			return $this->responseView('ThreePointStudio_UsergroupRanks_ViewAdmin_UsergroupRanks_Edit', '3ps_usergroup_ranks_delete', $viewParams);
 		}
 	}
 

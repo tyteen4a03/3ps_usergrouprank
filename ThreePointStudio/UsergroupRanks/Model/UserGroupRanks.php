@@ -5,7 +5,7 @@
 * See the LICENSE file within the package for details.
 */
 
-class ThreePointStudio_UserGroupRanks_Model_UserGroupRanks extends XenForo_Model {
+class ThreePointStudio_UsergroupRanks_Model_UserGroupRanks extends XenForo_Model {
 
 	public function getUserGroupRanksByIds($userGroupIds) {
 		if (!$userGroupIds) {
