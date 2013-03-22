@@ -44,6 +44,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 		$userGroupOptions = $this->_getCustomUserGroupRankModel()->getUserGroupOptions(0);
 		$viewParams = array(
 			'userGroupOptions' => $userGroupOptions,
+			'userGroupRank' => array('rank_active' => 1),
 		);
 		return $this->responseView('ThreePointStudio_UsergroupRanks_ViewAdmin_UsergroupRanks_Edit', '3ps_usergroup_ranks_edit', $viewParams);
 	}
