@@ -51,9 +51,9 @@
 			<xen:option value="3" selected="{$userGroupRank.rank_display_condition} == 3">{xen:phrase 3ps_usergroup_ranks_if_ug_is_primary_or_dsp_is_highest}</xen:option>
 			<xen:option value="4" selected="{$userGroupRank.rank_display_condition} == 4">{xen:phrase 3ps_usergroup_ranks_if_ug_is_primary_and_dsp_is_highest}</xen:option>
 		</xen:selectunit>
-		<!--<xen:spinboxunit label="{xen:phrase 3ps_usergroup_ranks_display_style_priority_limit}:" name="rank_styling_priority_limit" value="{$userGroupRank.rank_style_priority_limit}" min="0">
+		<xen:spinboxunit label="{xen:phrase 3ps_usergroup_ranks_display_style_priority_limit}:" name="rank_styling_priority_limit" value="{$userGroupRank.rank_style_priority_limit}" min="0">
 			<xen:explain>{xen:phrase 3ps_usergroup_ranks_display_style_priority_limit_explain}</xen:explain>
-		</xen:spinboxunit>-->
+		</xen:spinboxunit>
 	</fieldset>
 
 	<xen:submitunit save="{xen:phrase 3ps_usergroup_ranks_save_usergroup_rank}"></xen:submitunit>
@@ -96,7 +96,7 @@
   <optiongroups>
     <group group_id="3ps_usergroup_ranks" display_order="1" debug_only="0"/>
     <option option_id="3ps_usergroup_ranks_display_style" edit_format="select" data_type="unsigned_integer" can_backup="1">
-      <default_value>0</default_value>
+      <default_value>1</default_value>
       <edit_format_params>0=Over Avatar
 1=Under Avatar
 2=Above Username
@@ -143,13 +143,25 @@ Text: Plain text. You may use HTML.]]></phrase>
   </phrases>
   <route_prefixes>
     <route_type type="admin">
-      <prefix original_prefix="3ps-usergroup-ranks" class="ThreePointStudio_UsergroupRanks_Route_PrefixAdmin_UserGroupRanks" build_link="data_only"/>
+      <prefix original_prefix="3ps-usergroup-ranks" class="ThreePointStudio_UsergroupRanks_Route_PrefixAdmin_UsergroupRanks" build_link="data_only"/>
     </route_type>
   </route_prefixes>
   <style_properties/>
   <templates>
+    <template title="3ps_usergroup_ranks.css" version_id="0" version_string=""><![CDATA[.userGroupRanks {
+	list-style-type: none;
+	text-align: center;
+}
+
+.posPadTop {
+	border-top: 5px solid transparent;
+}
+
+.posPadBottom {
+	border-bottom: 5px solid transparent;	
+}]]></template>
     <template title="3ps_usergroup_ranks_displaybit" version_id="0" version_string="1.0.0"><![CDATA[<xen:require css="3ps_usergroup_ranks.css" />
-<ul class="usergroupRanks posPad{$ugrList_posPad}">
+<ul class="userGroupRanks posPad{$ugrList_posPad}">
 	<xen:foreach loop="$userGroupRanks" value="$userGroupRank">
 		<li>
 			{xen:raw $userGroupRank.content_render}

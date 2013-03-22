@@ -7,14 +7,13 @@
 
 class ThreePointStudio_UsergroupRanks_Listener_Listener {
 	public static function templateHook($hookName, &$contents, array $hookParams, XenForo_Template_Abstract $template) {
-		if ($hookName == "message_user_info_avatar" or $hookName == "message_user_info_text" or $hookName == "") {
+		if ($hookName == "message_user_info_avatar" or $hookName == "message_user_info_text") {
 			$options = XenForo_Application::get('options');
 			$ugrModel = XenForo_Model::create('ThreePointStudio_UsergroupRanks_Model_UsergroupRanks');
 			$userGroupRanks = $ugrModel->getAllActiveUserGroupRanks();
 			$newUGRList = array();
 			foreach ($userGroupRanks as $key => &$userGroupRank) {
 				$ugIds = explode(',', $userGroupRank['rank_usergroup']);
-				var_dump($ugIds);
 				// To keep or not to keep.
 				switch ($userGroupRank["rank_display_condition"]) {
 					case 1: // Drop this rank if we're not at highest priority
