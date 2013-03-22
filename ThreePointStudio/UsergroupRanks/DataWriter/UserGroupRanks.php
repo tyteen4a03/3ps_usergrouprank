@@ -20,7 +20,7 @@
 * 6 - if usergroup style priority is lower than a defined value (not implemented yet)
 */
 
-class ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks extends XenForo_DataWriter {
+class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_DataWriter {
 
 	var $fields = array(
 		"3ps_usergroup_ranks" => array(
@@ -77,6 +77,6 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks extends XenForo_
 	}
 
 	protected function _getUsergroupRanksModel() {
-		return $this->getModelFromCache('ThreePointStudio_UserGroupRanks_Model_UserGroupRanks');
+		return $this->getModelFromCache('ThreePointStudio_UsergroupRanks_Model_UsergroupRanks');
 	}
 }

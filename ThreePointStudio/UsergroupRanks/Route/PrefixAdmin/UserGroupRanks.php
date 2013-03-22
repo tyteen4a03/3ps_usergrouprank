@@ -5,7 +5,7 @@
 * See the LICENSE file within the package for details.
 */
 
-class ThreePointStudio_UsergroupRanks_Route_PrefixAdmin_UserGroupRanks implements XenForo_Route_Interface {
+class ThreePointStudio_UsergroupRanks_Route_PrefixAdmin_UsergroupRanks implements XenForo_Route_Interface {
 	/**
 	 * Match a specific route for an already matched prefix.
 	 *

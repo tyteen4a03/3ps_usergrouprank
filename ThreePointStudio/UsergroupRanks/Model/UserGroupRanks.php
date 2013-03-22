@@ -5,7 +5,7 @@
 * See the LICENSE file within the package for details.
 */
 
-class ThreePointStudio_UsergroupRanks_Model_UserGroupRanks extends XenForo_Model {
+class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model {
 
 	public function getUserGroupRanksByIds($userGroupIds) {
 		if (!$userGroupIds) {
@@ -40,7 +40,7 @@ class ThreePointStudio_UsergroupRanks_Model_UserGroupRanks extends XenForo_Model
 	}
 
 	public function insertNewUserGroupRank($input) {
-		$dw = XenForo_DataWriter::create('ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks');
+		$dw = XenForo_DataWriter::create('ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks');
 		if ($input['rid'] && $input['rid'] > 0) {
 			$dw->setExistingData($input['rid']);
 		}
