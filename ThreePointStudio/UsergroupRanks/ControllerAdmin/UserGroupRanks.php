@@ -5,7 +5,7 @@
 * See the LICENSE file within the package for details.
 */
 
-class ThreePointStudio_UsergroupRanks_ControllerAdmin_UserGroupRanks extends XenForo_ControllerAdmin_Abstract {
+class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends XenForo_ControllerAdmin_Abstract {
 	/**
 	 * Displays a list of usergroup ranks.
 	 *
