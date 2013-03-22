@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="3psUsergroupRanks" title="[3.studIo] Usergroup Ranks" version_string="1.0.0" version_id="0" url="" install_callback_class="ThreePointStudio_UsergroupRanks_Installer" install_callback_method="install" uninstall_callback_class="ThreePointStudio_UsergroupRanks_Installer" uninstall_callback_method="uninstall">
+  <admin_navigation>
+    <navigation navigation_id="3ps_usergroupranks" parent_navigation_id="userGroups" display_order="99" link="3ps-usergroup-ranks" admin_permission_id="userGroup" debug_only="0" hide_no_children="0"/>
+  </admin_navigation>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="3ps_usergroup_ranks_delete"><![CDATA[<xen:title>{xen:phrase 3ps_usergroup_ranks_confirm_deletion_of_usergroup_rank}: {xen:phrase 3ps_usergroup_ranks_rank_id} {$userGroupRankId}</xen:title>
+<xen:h1>{xen:phrase 3ps_usergroup_ranks_confirm_deletion_of_usergroup_rank}</xen:h1>
+
+<xen:navigation>
+	<xen:breadcrumb href="{xen:adminlink '3ps-usergroup-ranks/delete', $userGroupRankId}">{$userGroupRankId}</xen:breadcrumb>
+</xen:navigation>
+
+<xen:require css="delete_confirmation.css" />
+
+<xen:form action="{xen:adminlink '3ps-usergroup-ranks/delete', $userGroupRankId}" class="deleteConfirmForm formOverlay">
+
+	<p>{xen:phrase 3ps_usergroup_ranks_delete_rank_confirm}:</p>
+	<strong><a href="{xen:adminlink '3ps-usergroup-ranks/edit', $userGroupRankId}">{xen:raw $userGroupRankContent} ({xen:phrase 3ps_usergroup_ranks_rank_id}: {$userGroupRankId})</a></strong>
+
+	<xen:submitunit save="{xen:phrase 3ps_usergroup_ranks_delete_usergroup_rank}" />
+	<input type="hidden" name="rid" value="{$userGroupRankId}" />
+	<input type="hidden" name="_xfConfirm" value="1" />
+</xen:form>]]></template>
+    <template title="3ps_usergroup_ranks_edit"><![CDATA[<xen:title>{xen:if '{$userGroupRank.rid}', '{xen:phrase 3ps_usergroup_ranks_edit_usergroup_rank}: {xen:phrase 3ps_usergroup_ranks_rank_id} {$userGroupRank.rid}', '{xen:phrase 3ps_usergroup_ranks_create_usergroup_rank}'}</xen:title>
+
+<xen:form action="{xen:adminlink '3ps-usergroup-ranks/save', $userGroupRank}">
+
+	<fieldset>
+		<xen:checkboxunit label="">
+			<xen:option name="rank_active" selected="{$userGroupRank.rank_active}">{xen:phrase 3ps_usergroup_ranks_rank_is_active}</xen:option>
+		</xen:checkboxunit>
+		<xen:selectunit name="rank_type" label="{xen:phrase 3ps_usergroup_ranks_rank_type}" value="{$userGroupRank.rank_type}">
+			<xen:option value="0" selected="{$userGroupRank.rank_type} == 0">{xen:phrase image}</xen:option>
+			<xen:option value="1" selected="{$userGroupRank.rank_type} == 1">{xen:phrase text}</xen:option>
+			<xen:explain>{xen:phrase 3ps_usergroup_ranks_rank_type_explain}</xen:explain>
+		</xen:selectunit>
+		<xen:checkboxunit id="rank_showforugs" label="{xen:phrase 3ps_usergroup_ranks_show_rank_for_usergroups}:" name="rank_usergroup[]" listclass="checkboxColumns">
+			<xen:hint><br /><label><input type="checkbox" class="CheckAll" data-target="#rank_showforugs" /> {xen:phrase select_all}</label></xen:hint>
+			<xen:options source="$userGroupOptions" />
+		</xen:checkboxunit>
+		<xen:textboxunit label="{xen:phrase 3ps_usergroup_ranks_rank_content}:" name="rank_content" value="{$userGroupRank.rank_content}">
+			<xen:explain>{xen:phrase you_may_use_html}</xen:explain>
+		</xen:textboxunit>
+		<xen:selectunit name="rank_display_condition" label="{xen:phrase 3ps_usergroup_ranks_rank_display_condition}" value="{$userGroupRank.rank_display_condition}">
+			<xen:option value="0" selected="{$userGroupRank.rank_display_condition} == 0">{xen:phrase always}</xen:option>
+			<xen:option value="1" selected="{$userGroupRank.rank_display_condition} == 1">{xen:phrase 3ps_usergroup_ranks_if_dsp_is_highest}</xen:option>
+			<xen:option value="2" selected="{$userGroupRank.rank_display_condition} == 2">{xen:phrase 3ps_usergroup_ranks_if_ug_is_primary}</xen:option>
+			<xen:option value="3" selected="{$userGroupRank.rank_display_condition} == 3">{xen:phrase 3ps_usergroup_ranks_if_ug_is_primary_or_dsp_is_highest}</xen:option>
+			<xen:option value="4" selected="{$userGroupRank.rank_display_condition} == 4">{xen:phrase 3ps_usergroup_ranks_if_ug_is_primary_and_dsp_is_highest}</xen:option>
+		</xen:selectunit>
+		<xen:spinboxunit label="{xen:phrase 3ps_usergroup_ranks_display_style_priority_limit}:" name="rank_styling_priority_limit" value="{$userGroupRank.rank_style_priority_limit}" min="0">
+			<xen:explain>{xen:phrase 3ps_usergroup_ranks_display_style_priority_limit_explain}</xen:explain>
+		</xen:spinboxunit>
+	</fieldset>
+
+	<xen:submitunit save="{xen:phrase 3ps_usergroup_ranks_save_usergroup_rank}"></xen:submitunit>
+
+</xen:form>]]></template>
+    <template title="3ps_usergroup_ranks_list"><![CDATA[<xen:title>{xen:phrase 3ps_usergroup_ranks_usergroup_ranks_list}</xen:title>
+
+<xen:topctrl>
+	<a href="{xen:adminlink '3ps-usergroup-ranks/add'}" class="button">+ {xen:phrase 3ps_usergroup_ranks_create_new_usergroup_rank}</a>
+</xen:topctrl>
+
+<xen:require css="filter_list.css" />
+<xen:require js="js/xenforo/filter_list.js" />
+
+<h2 class="subHeading">
+	<xen:include template="filter_list_controls" />
+	{xen:phrase 3ps_usergroup_ranks_usergroup_ranks_list}
+</h2>
+
+<ol class="FilterList Scrollable">
+	<xen:foreach loop="$userGroupRanks" value="$userGroupRank">
+		<xen:listitem
+		id="{$userGroupRank.rid}"
+		label="{xen:raw $userGroupRank.content_render}"
+		href="{xen:adminlink '3ps-usergroup-ranks/edit', $userGroupRank}"
+		delete="{xen:adminlink '3ps-usergroup-ranks/delete', $userGroupRank}" />
+		
+	</xen:foreach>
+</ol>
+
+<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $userGroupRanks}</span>', 'total={xen:count $userGroupRanks}'}</p>]]></template>
+  </admin_templates>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="template_create" execute_order="10" callback_class="ThreePointStudio_UsergroupRanks_Listener_Listener" callback_method="template_create" active="1" description="Preload templates"/>
+    <listener event_id="template_hook" execute_order="10" callback_class="ThreePointStudio_UsergroupRanks_Listener_Listener" callback_method="templateHook" active="1" description="Makes postbit edits"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <optiongroups>
+    <group group_id="3ps_usergroup_ranks" display_order="1" debug_only="0"/>
+    <option option_id="3ps_usergroup_ranks_display_style" edit_format="select" data_type="unsigned_integer" can_backup="1">
+      <default_value>0</default_value>
+      <edit_format_params>0=Over Avatar
+1=Under Avatar
+2=Above Username
+3=Under UserTitle</edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="3ps_usergroup_ranks" display_order="1"/>
+    </option>
+  </optiongroups>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="3ps_usergroup_ranks_confirm_deletion_of_usergroup_rank" version_id="0" version_string="1.0.0"><![CDATA[Confirm Deletion of Usergroup Rank]]></phrase>
+    <phrase title="3ps_usergroup_ranks_create_new_usergroup_rank" version_id="0" version_string="1.0.0"><![CDATA[Create New Usergroup Rank]]></phrase>
+    <phrase title="3ps_usergroup_ranks_create_usergroup_rank" version_id="0" version_string="1.0.0"><![CDATA[Create Usergroup Rank]]></phrase>
+    <phrase title="3ps_usergroup_ranks_delete_rank_confirm" version_id="0" version_string="1.0.0"><![CDATA[Please confirm that you want to delete the following usergroup rank]]></phrase>
+    <phrase title="3ps_usergroup_ranks_delete_usergroup_rank" version_id="0" version_string="1.0.0"><![CDATA[Delete Usergroup Rank]]></phrase>
+    <phrase title="3ps_usergroup_ranks_display_style_priority_limit" version_id="0" version_string="1.0.0"><![CDATA[Display Style Priority Limit]]></phrase>
+    <phrase title="3ps_usergroup_ranks_display_style_priority_limit_explain" version_id="0" version_string="1.0.0"><![CDATA[The Display Styling Priority needed for the Usergroup Rank to appear, if you chose "If Display Styling Priority is higher/lower than a set value" in Rank Display Condition.]]></phrase>
+    <phrase title="3ps_usergroup_ranks_edit_usergroup_rank" version_id="0" version_string="1.0.0"><![CDATA[Edit Usergroup Rank]]></phrase>
+    <phrase title="3ps_usergroup_ranks_if_dsp_is_higher_than_a_set_value" version_id="0" version_string="1.0.0"><![CDATA[If Display Styling Priority is higher than a set value]]></phrase>
+    <phrase title="3ps_usergroup_ranks_if_dsp_is_highest" version_id="0" version_string="1.0.0"><![CDATA[If Display Styling Priority is highest]]></phrase>
+    <phrase title="3ps_usergroup_ranks_if_ug_is_primary" version_id="0" version_string="1.0.0"><![CDATA[If usergroup is Primary]]></phrase>
+    <phrase title="3ps_usergroup_ranks_if_ug_is_primary_and_dsp_is_highest" version_id="0" version_string="1.0.0"><![CDATA[If usergroup is Primary and display style priority is highest]]></phrase>
+    <phrase title="3ps_usergroup_ranks_if_ug_is_primary_or_dsp_is_highest" version_id="0" version_string="1.0.0"><![CDATA[If usergroup is Primary or display style priority is highest]]></phrase>
+    <phrase title="3ps_usergroup_ranks_rank_content" version_id="0" version_string="1.0.0"><![CDATA[Rank Content]]></phrase>
+    <phrase title="3ps_usergroup_ranks_rank_display_condition" version_id="0" version_string="1.0.0"><![CDATA[Rank Display Condition]]></phrase>
+    <phrase title="3ps_usergroup_ranks_rank_id" version_id="0" version_string="1.0.0"><![CDATA[Rank ID]]></phrase>
+    <phrase title="3ps_usergroup_ranks_rank_is_active" version_id="0" version_string="1.0.0"><![CDATA[Rank is active]]></phrase>
+    <phrase title="3ps_usergroup_ranks_rank_type" version_id="0" version_string="1.0.0"><![CDATA[Rank Type]]></phrase>
+    <phrase title="3ps_usergroup_ranks_rank_type_explain" version_id="0" version_string="1.0.0"><![CDATA[Image: An image for the rank. Wrapped with &lt;img&gt; tag.<br />
+Text: Plain text. You may use HTML.]]></phrase>
+    <phrase title="3ps_usergroup_ranks_requested_usergroup_rank_not_found" version_id="0" version_string="1.0.0"><![CDATA[The requested Usergroup Rank is not found.]]></phrase>
+    <phrase title="3ps_usergroup_ranks_save_usergroup_rank" version_id="0" version_string="1.0.0"><![CDATA[Save Usergroup Rank]]></phrase>
+    <phrase title="3ps_usergroup_ranks_show_rank_for_usergroups" version_id="0" version_string="1.0.0"><![CDATA[Show Rank for usergroup]]></phrase>
+    <phrase title="3ps_usergroup_ranks_usergroup_ranks_list" version_id="0" version_string="1.0.0"><![CDATA[Usergroup Ranks]]></phrase>
+    <phrase title="admin_navigation_3ps_usergroupranks" version_id="0" version_string="1.0.0"><![CDATA[User Group Ranks]]></phrase>
+    <phrase title="option_3ps_usergroup_ranks_display_style" version_id="0" version_string="1.0.0"><![CDATA[Display Style]]></phrase>
+    <phrase title="option_3ps_usergroup_ranks_display_style_explain" version_id="0" version_string="1.0.0"><![CDATA[Select the place the ranks should be shown.]]></phrase>
+    <phrase title="option_group_3ps_usergroup_ranks" version_id="0" version_string="1.0.0"><![CDATA[[3.studIo] Usergroup Ranks Options]]></phrase>
+    <phrase title="option_group_3ps_usergroup_ranks_description" version_id="0" version_string="1.0.0"><![CDATA[]]></phrase>
+  </phrases>
+  <route_prefixes>
+    <route_type type="admin">
+      <prefix original_prefix="3ps-usergroup-ranks" class="ThreePointStudio_UsergroupRanks_Route_PrefixAdmin_UserGroupRanks" build_link="data_only"/>
+    </route_type>
+  </route_prefixes>
+  <style_properties/>
+  <templates>
+    <template title="3ps_usergroup_ranks_displaybit" version_id="0" version_string="1.0.0"><![CDATA[<xen:require css="3ps_usergroup_ranks.css" />
+<ul class="usergroupRanks posPad{$ugrList_posPad}">
+	<xen:foreach loop="$userGroupRanks" value="$userGroupRank">
+		<li>
+			{xen:raw $userGroupRank.content_render}
+		</li>
+	</xen:foreach>
+</ul>]]></template>
+  </templates>
+  <bb_code_media_sites/>
+</addon>
