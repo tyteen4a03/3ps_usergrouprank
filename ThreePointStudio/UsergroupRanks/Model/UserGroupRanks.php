@@ -24,6 +24,10 @@ class ThreePointStudio_UserGroupRanks_Model_UserGroupRanks extends XenForo_Model
 		return $this->fetchAllKeyed('SELECT * FROM 3ps_usergroup_ranks ORDER BY rid', 'rid');
 	}
 
+	public function getAllActiveUserGroupRanks() {
+		return $this->fetchAllKeyed('SELECT * FROM 3ps_usergroup_ranks WHERE rank_active = 1 ORDER BY rid', 'rid');
+	}
+
 	/**
 	* Gets the named usergroup rank.
 	*

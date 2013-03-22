@@ -77,7 +77,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UserGroupRanks extends Xen
 				'rank_active' => XenForo_Input::BINARY,
 				'rank_content' => XenForo_Input::STRING,
 				'rank_display_condition' => XenForo_Input::UINT,
-				'rank_styling_priority_limit' => XenForo_Input::UINT,
+				'rank_style_priority_limit' => XenForo_Input::UINT,
 				'rid' => XenForo_Input::UINT,
 		));
 

@@ -13,7 +13,7 @@ class ThreePointStudio_UsergroupRanks_Route_PrefixAdmin_UserGroupRanks implement
 	 */
 	public function match($routePath, Zend_Controller_Request_Http $request, XenForo_Router $router) {
 		$action = $router->resolveActionWithIntegerParam($routePath, $request, 'rid');
-		return $router->getRouteMatch('ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks', $action, /*'3psUsergroupRanks'*/'');
+		return $router->getRouteMatch('ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks', $action, '3ps_usergroupranks');
 	}
 
 	/**

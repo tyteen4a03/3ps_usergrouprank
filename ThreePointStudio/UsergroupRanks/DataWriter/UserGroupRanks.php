@@ -11,8 +11,13 @@
 * 0 - image (default), 1 - text (not implemented yet)
 *
 * rank_display_condition: Defines when the usergroup rank should be displayed
-* 0 - at all times (default), 1 - if styling priority is the highest (not implemented yet),
-* 2 - if styling priority is higher than a defined value (not implemented yet)
+* 0 - at all times (default)
+* 1 - if usergroup style priority is the highest
+* 2 - if usergroup is primary usergroup
+* 3 - if usergroup is primary usergroup or usergroup style priority is the highest
+* 4 - if usergroup is primary usergroup and usergroup style priority is the highest
+* 5 - if usergroup style priority is higher than a defined value (not implemented yet)
+* 6 - if usergroup style priority is lower than a defined value (not implemented yet)
 */
 
 class ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks extends XenForo_DataWriter {
@@ -44,7 +49,7 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UserGroupRanks extends XenForo_
 				'type' => self::TYPE_UINT,
 				'default' => 0
 			),
-			"rank_styling_priority_limit" => array(
+			"rank_style_priority_limit" => array(
 				'type' => self::TYPE_UINT,
 				'default' => 0
 			)
