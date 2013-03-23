@@ -11,50 +11,46 @@ class ThreePointStudio_UsergroupRanks_Importer_vBulletin extends XFCP_ThreePoint
 	}
 
 	public function stepUsergroupRanks($start, array $options) {
-		$options = array_merge(array(
-				'limit' => 50,
-				'max' => false
-			), $options
-		);
-
 		$sDb = $this->_sourceDb;
 		$prefix = $this->_prefix; 
 		$model = $this->_importModel;
 		$model->retainableKeys[] = 'rid';
 
-		$options['max'] = $sDb->fetchOne('SELECT MAX(rankid) FROM ' . $prefix . 'ranks');
-
-		$ranks = $sDb->fetchAll($sDb->limit('
-				SELECT `rankid`, `minposts`, `rankimg`, `usergroupid`, `type`, `display`
-				FROM ' . $prefix . 'usergroup
-                WHERE `rankid` > ?
-				ORDER BY `rankid` ASC
-			', $options['limit']
-			), $start
+		$ranks = $sDb->fetchAll('
+			SELECT `rankid`, `minposts`, `rankimg`, `usergroupid`, `type`, `display`
+			FROM ' . $prefix . 'ranks
+			ORDER BY `rankid` ASC'
 		);
 
 		if (!$ranks) { // No rank to import
 			return true;
 		}
-		$ugIds = array();
-		foreach($ranks as $rank) {
-			$ugIds[] = $rank['usergroupid'];
-		}
-
-		$ugMap = $model->getImportContentMap('userGroup', $ugIds);
+		$ugMap = $model->getImportContentMap('userGroup');
 
 		XenForo_Db::beginTransaction();
+		$total = isset($options['total']) ? $options['total'] : 0;
 		foreach ($ranks as $rank) {
-			$next = max($next, $rank['rankid']);
-			$newUsergroupID = $this->_mapLookUp($ugMap, $rank['rankid']);
-			if (empty($newUsergroupID)) {
-				// Usergroup not found
-				continue;
-			}
-
+			$input = array(
+				'rank_type' => $rank['type'],
+				'rank_usergroup' => $this->_mapLookUp($ugMap, $rank['usergroupid']),
+				'rank_active' => 1, // Always active
+				'rank_content' => $rank["rankimg"],
+				'rank_postreq' => ($rank['minposts'] > 0) ? 1 : 0, // If minposts has something, must be higher than
+				'rank_postreq_amount' => $rank['minposts'],
+				'rank_display_condition' => $rank['display'],
+				'rank_style_priority_limit' => 0
+			);
 			$dw = XenForo_DataWriter::create('ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks');
 			$dw->setImportMode(true);
-			$dw->set();
+			$dw->bulkSet($input);
+			$dw->save();
+
+			$total++;
 		}
+		XenForo_Db::commit();
+
+		$this->_session->incrementStepImportTotal($total);
+
+		return true;
 	}
 }
