@@ -73,22 +73,21 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 		$this->_assertPostOnly();
 
 		$input = $this->_input->filter(array(
-				'rank_type' => XenForo_Input::UINT,
-				'rank_usergroup' => array(XenForo_Input::UINT, 'array' => true),
-				'rank_active' => XenForo_Input::BINARY,
-				'rank_content' => XenForo_Input::STRING,
-				'rank_display_condition' => XenForo_Input::UINT,
-				'rank_style_priority_limit' => XenForo_Input::UINT,
-				'rid' => XenForo_Input::UINT,
+			'rank_type' => XenForo_Input::UINT,
+			'rank_usergroup' => array(XenForo_Input::UINT, 'array' => true),
+			'rank_active' => XenForo_Input::BINARY,
+			'rank_content' => XenForo_Input::STRING,
+			'rank_postreq' => XenForo_Input::UINT,
+			'rank_postreq_amount' => XenForo_Input::UINT,
+			'rank_display_condition' => XenForo_Input::UINT,
+			'rank_style_priority_limit' => XenForo_Input::UINT,
+			'rid' => XenForo_Input::UINT,
 		));
 
-		$userGroupRankId = $input['rid'];
-
-		$this->getModelFromCache('ThreePointStudio_UsergroupRanks_Model_UsergroupRanks')->insertNewUserGroupRank($input);
-
+		$ugrID = $this->getModelFromCache('ThreePointStudio_UsergroupRanks_Model_UsergroupRanks')->insertOrUpdateUserGroupRank($input);
 		return $this->responseRedirect(
 			XenForo_ControllerResponse_Redirect::SUCCESS,
-			XenForo_Link::buildAdminLink('3ps-usergroup-ranks') . $this->getLastHash($input['rid'])
+			XenForo_Link::buildAdminLink('3ps-usergroup-ranks') . $this->getLastHash($ugrID)
 		);
 	}
 

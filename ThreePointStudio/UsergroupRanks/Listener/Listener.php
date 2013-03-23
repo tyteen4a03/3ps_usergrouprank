@@ -6,6 +6,25 @@
 */
 
 class ThreePointStudio_UsergroupRanks_Listener_Listener {
+	public static function loadClassImporter($class, array &$extend) {
+		switch ($class) {
+			case 'XenForo_Importer_vBulletin36x':
+			case 'XenForo_Importer_vBulletin':
+				$extend[] = 'ThreePointStudio_UsergroupRanks_Importer_VBulletin';
+				break;
+			case 'XenForo_Importer_IPBoard32x':
+			case 'XenForo_Importer_IPBoard':
+				//$extend[] = 'ThreePointStudio_UsergroupRanks_Importer_IPBoard'; // Coming soon!
+				break;
+			case 'XenForo_Importer_PhpBb3':
+				//$extend[] = 'ThreePointStudio_UsergroupRanks_Importer_PhpBb3'; // Coming soon!
+				break;
+			case 'XenForo_Importer_myvBulletin4':
+				//$extend[] = 'ThreePointStudio_UsergroupRanks_Importer_VBulletin'; // Coming soon!
+				break;
+		}
+	}
+
 	public static function templateHook($hookName, &$contents, array $hookParams, XenForo_Template_Abstract $template) {
 		if ($hookName == "message_user_info_avatar" or $hookName == "message_user_info_text") {
 			$options = XenForo_Application::get('options');
@@ -13,8 +32,26 @@ class ThreePointStudio_UsergroupRanks_Listener_Listener {
 			$userGroupRanks = $ugrModel->getAllActiveUserGroupRanks();
 			$newUGRList = array();
 			foreach ($userGroupRanks as $key => &$userGroupRank) {
-				$ugIds = explode(',', $userGroupRank['rank_usergroup']);
 				// To keep or not to keep.
+				$ugIds = explode(',', $userGroupRank['rank_usergroup']);
+				$postCount = $hookParams['user']['message_count'];
+				switch ($userGroupRank["rank_postreq"]) {
+					case 1: // Drop this rank if post count isn't high enough
+						if ($postCount < $userGroupRank["rank_postreq_amount"]) {
+							unset($userGroupRanks[$key]);
+						}
+						break;
+					case 2: // Drop this rank if post count isn't low enough
+						if ($postCount > $userGroupRank["rank_postreq_amount"]) {
+							unset($userGroupRanks[$key]);
+						}
+						break;
+					case 3: // Drop this rank if post count isn't equal 
+						if ($postCount != $userGroupRank["rank_postreq_amount"]) {
+							unset($userGroupRanks[$key]);
+						}
+						break;
+				}
 				switch ($userGroupRank["rank_display_condition"]) {
 					case 1: // Drop this rank if we're not at highest priority
 						if (!in_array($hookParams['user']['display_style_group_id'], $ugIds)) {

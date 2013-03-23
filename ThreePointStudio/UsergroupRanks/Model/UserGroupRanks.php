@@ -6,19 +6,10 @@
 */
 
 class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model {
-
-	public function getUserGroupRanksByIds($userGroupIds) {
-		if (!$userGroupIds) {
-			return array();
-		}
-
-		return $this->fetchAllKeyed('SELECT * FROM 3ps_usergroup_ranks WHERE rank_usergroup IN (?) ORDER BY rid', 'rid', $userGroupIds);
-	}
-
 	/**
 	* Gets all usergroup ranks.
 	*
-	* @return array Format: [user group id] => info
+	* @return	array	Format: [user group id] => info
 	*/
 	public function getAllUserGroupRanks() {
 		return $this->fetchAllKeyed('SELECT * FROM 3ps_usergroup_ranks ORDER BY rid', 'rid');
@@ -31,29 +22,37 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	/**
 	* Gets the named usergroup rank.
 	*
-	* @param array $userGroupId
+	* @param	array	$userGroupId
 	*
-	* @return array Format: [user group id] => info
+	* @return	array	Format: [user group id] => info
 	*/
 	public function getUserGroupRankById($userGroupId) {
 		return $this->_getDb()->fetchRow('SELECT * FROM 3ps_usergroup_ranks WHERE rid = ?', $userGroupId);
 	}
 
-	public function insertNewUserGroupRank($input) {
+	/**
+	* Inserts or Updates a usergroup rank.
+	*
+	* @param	array	$input	1D array with row content.
+	*
+	* @return	int	Usergroup Rank ID
+	*/
+	public function insertOrUpdateUserGroupRank($input) {
 		$dw = XenForo_DataWriter::create('ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks');
-		if ($input['rid'] && $input['rid'] > 0) {
+		if ($input['rid'] and $input['rid'] > 0) {
 			$dw->setExistingData($input['rid']);
 		}
 		$dw->bulkSet($input);
 		$dw->save();
+		return $dw->get('rid');
 	}
 
 	/**
 	 * Gets the list of possible extra user groups in "option" format.
 	 *
-	 * @param string|array $groupIds List of existing extra group IDs; may be serialized.
+	 * @param	string|array	$groupIds List of existing extra group IDs; may be serialized.
 	 *
-	 * @return array List of user group options (keys: label, value, selected)
+	 * @return	array List of	user group options (keys: label, value, selected)
 	 */
 	public function getUserGroupOptions($groupIds) {
 		return $this->getModelFromCache('XenForo_Model_UserGroup')->getUserGroupOptions($groupIds);

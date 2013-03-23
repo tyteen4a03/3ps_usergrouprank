@@ -8,7 +8,10 @@
 /*
 * Note on some values:
 * rank_type: Defines how the addon should treat the content in rank_content
-* 0 - image (default), 1 - text (not implemented yet)
+* 0 - image (default), 1 - text
+*
+* rank_postreq: Defines post amount conditions (temporary for 1.1.0, will be replaced by something more solid in 1.2)
+* 0 - Ignore this criteria, 1 - Higher than, 2 - Lower than, 3 - Equal
 *
 * rank_display_condition: Defines when the usergroup rank should be displayed
 * 0 - at all times (default)
@@ -44,6 +47,14 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_
 			"rank_content" => array(
 				'type' => self::TYPE_STRING,
 				'default' => ""
+			),
+			"rank_postreq" => array(
+				'type' => self::TYPE_UINT,
+				'default' => 0
+			),
+			"rank_postreq_amount" => array(
+				'type' => self::TYPE_UINT,
+				'default' => 0
 			),
 			"rank_display_condition" => array(
 				'type' => self::TYPE_UINT,
