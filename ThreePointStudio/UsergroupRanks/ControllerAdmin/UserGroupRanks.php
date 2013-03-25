@@ -35,6 +35,9 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 		$viewParams = array(
 			'userGroupRank' => $userGroupRank,
 			'userGroupOptions' => $userGroupOptions,
+			'userCriteria' => XenForo_Helper_Criteria::prepareCriteriaForSelection($userGroupRank['rank_user_criteria']),
+			'userCriteriaData' => XenForo_Helper_Criteria::getDataForUserCriteriaSelection(),
+			'showInactiveCriteria' => true
 		);
 
 		return $this->responseView('ThreePointStudio_UsergroupRanks_ViewAdmin_UsergroupRanks_Edit', '3ps_usergroup_ranks_edit', $viewParams);
@@ -45,6 +48,9 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 		$viewParams = array(
 			'userGroupOptions' => $userGroupOptions,
 			'userGroupRank' => array('rank_active' => 1),
+			'userCriteria' => XenForo_Helper_Criteria::prepareCriteriaForSelection($userGroupRank['rank_user_criteria']),
+			'userCriteriaData' => XenForo_Helper_Criteria::getDataForUserCriteriaSelection(),
+			'showInactiveCriteria' => true
 		);
 		return $this->responseView('ThreePointStudio_UsergroupRanks_ViewAdmin_UsergroupRanks_Edit', '3ps_usergroup_ranks_edit', $viewParams);
 	}
@@ -77,10 +83,13 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 			'rank_usergroup' => array(XenForo_Input::UINT, 'array' => true),
 			'rank_active' => XenForo_Input::BINARY,
 			'rank_content' => XenForo_Input::STRING,
+			// Old conditioning fields
 			'rank_postreq' => XenForo_Input::UINT,
 			'rank_postreq_amount' => XenForo_Input::UINT,
 			'rank_display_condition' => XenForo_Input::UINT,
 			'rank_style_priority_limit' => XenForo_Input::UINT,
+			// New conditioning fields
+			'rank_user_criteria' => XenForo_Input::ARRAY_SIMPLE,
 			'rid' => XenForo_Input::UINT,
 		));
 

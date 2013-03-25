@@ -22,6 +22,7 @@ class ThreePointStudio_UsergroupRanks_Installer {
 					) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;');
 		}
 		if ($version < 2) {
+			// TODO: Old code
 			$db->query('ALTER TABLE `3ps_usergroup_ranks` ADD `rank_postreq` TINYINT UNSIGNED NOT NULL AFTER `rank_content`,
 						ADD `rank_postreq_amount` INT UNSIGNED NOT NULL AFTER `rank_postreq`');
 		}

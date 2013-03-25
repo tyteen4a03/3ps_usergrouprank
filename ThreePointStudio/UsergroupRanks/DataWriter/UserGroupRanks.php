@@ -63,7 +63,12 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_
 			"rank_style_priority_limit" => array(
 				'type' => self::TYPE_UINT,
 				'default' => 0
-			)
+			),
+			'rank_user_criteria' => array(
+				'type' => self::TYPE_UNKNOWN,
+				'required' => true,
+				'verification' => array('$this', '_verifyCriteria')
+			),
 		)
 	);
 
@@ -89,5 +94,11 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_
 
 	protected function _getUsergroupRanksModel() {
 		return $this->getModelFromCache('ThreePointStudio_UsergroupRanks_Model_UsergroupRanks');
+	}
+
+	protected function _verifyCriteria(&$criteria) {
+		$criteriaFiltered = XenForo_Helper_Criteria::prepareCriteriaForSave($criteria);
+		$criteria = serialize($criteriaFiltered);
+		return true;
 	}
 }
