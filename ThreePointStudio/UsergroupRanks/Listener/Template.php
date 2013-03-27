@@ -1,6 +1,6 @@
 <?php
 /*
-* Usergroup Ranks v1.1.0 written by tyteen4a03@3.studIo.
+* Usergroup Ranks v1.5.0 written by tyteen4a03@3.studIo.
 * This software is licensed under the BSD 2-Clause modified License.
 * See the LICENSE file within the package for details.
 */
@@ -16,47 +16,10 @@ class ThreePointStudio_UsergroupRanks_Listener_Template {
 				$ugIds = explode(',', $userGroupRank['rank_usergroup']);
 				// Hack, so the usergroup rank information is available
 				$userArray = array_merge($hookParams['user'], array('ugrInfo' => $userGroupRank));
-				$match = XenForo_Helper_Criteria::userMatchesCriteria($userArray);
-				switch ($userGroupRank["rank_postreq"]) {
-					case 1: // Drop this rank if post count isn't high enough
-						if ($postCount < $userGroupRank["rank_postreq_amount"]) {
-							unset($userGroupRanks[$key]);
-						}
-						break;
-					case 2: // Drop this rank if post count isn't low enough
-						if ($postCount > $userGroupRank["rank_postreq_amount"]) {
-							unset($userGroupRanks[$key]);
-						}
-						break;
-					case 3: // Drop this rank if post count isn't equal 
-						if ($postCount != $userGroupRank["rank_postreq_amount"]) {
-							unset($userGroupRanks[$key]);
-						}
-						break;
-				}
-				switch ($userGroupRank["rank_display_condition"]) {
-					case 1: // Drop this rank if we're not at highest priority
-						if (!in_array($hookParams['user']['display_style_group_id'], $ugIds)) {
-							unset($userGroupRanks[$key]);
-						}
-						break;
-					case 2: // Drop this rank if rank is not primary group
-						if (!in_array($hookParams['user']['user_group_id'], $ugIds)) {
-							unset($userGroupRanks[$key]);
-						}
-						break;
-					case 3: // Drop this rank if rank is not primary group and we're not at highest priority
-						if (!in_array($hookParams['user']['display_style_group_id'], $ugIds) and !in_array($hookParams['user']['user_group_id'], $ugIds)) {
-							unset($userGroupRanks[$key]);
-						}
-						break;
-					case 4: // Drop this rank if rank is not primary group or we're not at highest priority
-						if (!in_array($hookParams['user']['display_style_group_id'], $ugIds) or !in_array($hookParams['user']['user_group_id'], $ugIds)) {
-							unset($userGroupRanks[$key]);
-						}
-						break;
-					default: // Nothing to do
-						break;
+				$match = XenForo_Helper_Criteria::userMatchesCriteria($userGroupRank['rank_user_criteria'], $userArray);
+				if (!$match) {
+					unset($userGroupRanks[$key]);
+					continue;
 				}
 				$userGroupRank["content_render"] = ($userGroupRank['rank_type'] === 0) ? '<img src="' . $userGroupRank["rank_content"] . '" />' : $userGroupRank["rank_content"];
 			}

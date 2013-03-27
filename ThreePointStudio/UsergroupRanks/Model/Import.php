@@ -1,6 +1,6 @@
 <?php
 /*
-* Usergroup Ranks v1.1.0 written by tyteen4a03@3.studIo.
+* Usergroup Ranks v1.5.0 written by tyteen4a03@3.studIo.
 * This software is licensed under the BSD 2-Clause modified License.
 * See the LICENSE file within the package for details.
 */
