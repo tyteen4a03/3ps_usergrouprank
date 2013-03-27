@@ -7,17 +7,18 @@
 
 class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 	public static function criteriaUser($rule, array $data, array $user, &$returnValue) {
-		return;  // Debug
+		var_dump($returnValue);
 		// Get our DSPCache
 		$dspCache = XenForo_Model::create('XenForo_Model_DataRegistry')->get('3ps_dspCache');
 		// User usergroups
 		$secondaryUgs = explode(",", $user["secondary_group_ids"]);
 		$secUgsCount = count($secondaryUgs);
 		$primaryUg = $user['user_group_id'];
-		$displayUg = $user['display_group_id'];
+		$displayUg = $user['display_style_group_id'];
 		$allUgs = array_merge((array)$primaryUg, $secondaryUgs);
 		// Usergroup Rank usergroups
-		$rank_allUgs = explode(",", $user['ugrInfo']['rank_usergroup']);
+		$rank_allUgs = $data['user_group_ids'];
+		$rank_dspLimit = intval($data['dsp']);
 		switch ($rule) {
 			// Is/Is Not primary usergroup
 			case '3ps_usergroup_ranks_is_primary_ug':
@@ -78,68 +79,76 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			// Display Style Priority - All Usergroups
 			case '3ps_usergroup_ranks_allugs_dsp_lower':
 				foreach ($allUgs as $ug) {
-					if ($dspCache[$ug] > $data['3ps_usergroup_ranks_allugs_dsp_lower']['dsp']) { // Bigger? Reject
+					if ($dspCache[$ug] > $rank_dspLimit) { // Bigger? Reject
 						$returnValue = false;
 						return;
 					}
 				}
+				$returnValue = true;
 				break;
 			case '3ps_usergroup_ranks_allugs_dsp_higher':
 				foreach ($allUgs as $ug) {
-					if ($dspCache[$ug] < $data['3ps_usergroup_ranks_allugs_dsp_higher']['dsp']) { // Smaller? Reject
+					if ($dspCache[$ug] < $rank_dspLimit) { // Smaller? Reject
 						$returnValue = false;
 						return;
 					}
 				}
+				$returnValue = true;
 				break;
 			// Display Style Priority - Primary Usergroup only
 			case '3ps_usergroup_ranks_priug_dsp_lower':
-				if ($dspCache[$primaryUg] > $data['3ps_usergroup_ranks_priug_dsp_lower']['dsp']) { // Bigger? Reject
+				if ($dspCache[$primaryUg] > $rank_dspLimit) { // Bigger? Reject
 					$returnValue = false;
 					return;
 				}
+				$returnValue = true;
 				break;
 			case '3ps_usergroup_ranks_priug_dsp_higher':
-				if ($dspCache[$primaryUg] < $data['3ps_usergroup_ranks_priug_dsp_higher']['dsp']) { // Smaller? Reject
+				if ($dspCache[$primaryUg] < $rank_dspLimit) { // Smaller? Reject
 					$returnValue = false;
 					return;
 				}
+				$returnValue = true;
 				break;
 			// Display Style Priority - Display Usergroup only
 			case '3ps_usergroup_ranks_displayug_dsp_lower':
-				if ($dspCache[$displayUg] > $data['3ps_usergroup_ranks_displayug_dsp_lower']['dsp']) { // Bigger? Reject
+				if ($dspCache[$displayUg] > $rank_dspLimit) { // Bigger? Reject
 					$returnValue = false;
 					return;
 				}
+				$returnValue = true;
 				break;
 			case '3ps_usergroup_ranks_displayug_dsp_higher':
-				if ($dspCache[$displayUg] < $data['3ps_usergroup_ranks_displayug_dsp_higher']['dsp']) { // Smaller? Reject
+				if ($dspCache[$displayUg] < $rank_dspLimit) { // Smaller? Reject
 					$returnValue = false;
 					return;
 				}
+				$returnValue = true;
 				break;
 			// Display Style Priority - Secondary Usergroups (Any)
 			case '3ps_usergroup_ranks_secugs_dsp_lower_any':
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] > $data['3ps_usergroup_ranks_secugs_dsp_lower_any']['dsp']) { // Smaller? Good!
+					if ($dspCache[$ug] > $rank_dspLimit) { // Smaller? Good!
 						$returnValue = false;
 						return;
 					}
 				}
+				$returnValue = true;
 				break;
 			case '3ps_usergroup_ranks_secugs_dsp_higher_any':
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] < $data['3ps_usergroup_ranks_secugs_dsp_higher_any']['dsp']) { // Bigger? Good!
+					if ($dspCache[$ug] < $rank_dspLimit) { // Bigger? Good!
 						$returnValue = false;
 						return;
 					}
 				}
+				$returnValue = true;
 				break;
 			// Display Style Priority - Secondary Usergroups (All) 
 			case '3ps_usergroup_ranks_secugs_dsp_lower_all':
 				$matchList = 0;
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] < $data['3ps_usergroup_ranks_secugs_dsp_lower_all']['dsp']) { // Bigger? Reject
+					if ($dspCache[$ug] < $rank_dspLimit) { // Bigger? Reject
 						$matchList++;
 					}
 				}
@@ -148,7 +157,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_secugs_dsp_higher_all':
 				$matchList = 0;
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] > $data['3ps_usergroup_ranks_secugs_dsp_higher_all']['dsp']) { // Smaller? Reject
+					if ($dspCache[$ug] > $rank_dspLimit) { // Smaller? Reject
 						$matchList++;
 					}
 				}
@@ -157,7 +166,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			// Display Style Priority - Any usergroup
 			case '3ps_usergroup_ranks_anyugs_dsp_lower':
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] < $data['3ps_usergroup_ranks_anyugs_dsp_lower']['dsp']) { // Smaller? Good!
+					if ($dspCache[$ug] < $rank_dspLimit) { // Smaller? Good!
 						$returnValue = true;
 						return;
 					}
@@ -166,7 +175,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				break;
 			case '3ps_usergroup_ranks_anyugs_dsp_higher':
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] > $data['3ps_usergroup_ranks_anyugs_dsp_higher']['dsp']) { // Bigger? Good!
+					if ($dspCache[$ug] > $rank_dspLimit) { // Bigger? Good!
 						$returnValue = true;
 						return;
 					}

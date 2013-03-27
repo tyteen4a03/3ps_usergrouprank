@@ -13,10 +13,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Template {
 			$userGroupRanks = $ugrModel->getAllActiveUserGroupRanks();
 			foreach ($userGroupRanks as $key => &$userGroupRank) {
 				// To keep or not to keep.
-				$ugIds = explode(',', $userGroupRank['rank_usergroup']);
-				// Hack, so the usergroup rank information is available
-				$userArray = array_merge($hookParams['user'], array('ugrInfo' => $userGroupRank));
-				$match = XenForo_Helper_Criteria::userMatchesCriteria($userGroupRank['rank_user_criteria'], $userArray);
+				$match = XenForo_Helper_Criteria::userMatchesCriteria($userGroupRank['rank_user_criteria'], $hookParam['user']);
 				if (!$match) {
 					unset($userGroupRanks[$key]);
 					continue;
