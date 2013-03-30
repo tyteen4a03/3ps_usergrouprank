@@ -12,7 +12,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 	 * @return XenForo_ControllerResponse_Abstract
 	 */
 	public function actionIndex() {
-		$userGroupRanks = $this->_getCustomUserGroupRankModel()->getAllUserGroupRanks();
+		$userGroupRanks = $this->_getUsergroupRanksModel()->getAllUserGroupRanks();
 		foreach ($userGroupRanks as &$userGroupRank) {
 			$userGroupRank['content_render'] = ($userGroupRank['rank_type'] === 0) ? '<img src="' . $userGroupRank["rank_content"] . '" />' : $userGroupRank["rank_content"];
 		}
@@ -30,7 +30,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 	*/
 	public function actionEdit() {
 		$userGroupRankId = $this->_input->filterSingle('rid', XenForo_Input::UINT);
-		$userGroupRank = $this->_getCustomUserGroupRankOrError($userGroupRankId);
+		$userGroupRank = $this->_getUsergroupRankOrError($userGroupRankId);
 		$viewParams = array(
 			'userGroupRank' => $userGroupRank,
 			'userCriteria' => XenForo_Helper_Criteria::prepareCriteriaForSelection($userGroupRank['rank_user_criteria']),
@@ -54,9 +54,15 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 	public function actionDelete() {
 		$userGroupRankId = $this->_input->filterSingle('rid', XenForo_Input::UINT);
 		if ($this->isConfirmedPost()) {
-			return $this->_deleteData('ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks', 'rid', XenForo_Link::buildAdminLink('3ps-usergroup-ranks'));
+			$this->_assertPostOnly();
+			$dw = XenForo_DataWriter::create('ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks');
+			$dw->setExistingData($this->_input->filterSingle('rid', XenForo_Input::STRING));
+			$dw->delete();
+			XenForo_Model::create("ThreePointStudio_UsergroupRanks_Model_UsergroupRanks")->rebuildRankDefinitionCache();
+			$redirectMessage = new XenForo_Phrase('deletion_successful');
+			return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, XenForo_Link::buildAdminLink('3ps-usergroup-ranks'), $redirectMessage);
 		} else {
-			$userGroupRank = $this->_getCustomUserGroupRankOrError($userGroupRankId);
+			$userGroupRank = $this->_getUsergroupRankOrError($userGroupRankId);
 			$userGroupRankContent = ($userGroupRank['rank_type'] === 0) ? '<img src="' . $userGroupRank["rank_content"] . '" />' : $userGroupRank["rank_content"];
 			$viewParams = array(
 				'userGroupRankId' => $userGroupRankId,
@@ -83,7 +89,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 			'rid' => XenForo_Input::UINT,
 		));
 
-		$ugrID = $this->getModelFromCache('ThreePointStudio_UsergroupRanks_Model_UsergroupRanks')->insertOrUpdateUserGroupRank($input);
+		$ugrID = $this->_getUsergroupRanksModel()->insertOrUpdateUserGroupRank($input);
 		return $this->responseRedirect(
 			XenForo_ControllerResponse_Redirect::SUCCESS,
 			XenForo_Link::buildAdminLink('3ps-usergroup-ranks') . $this->getLastHash($ugrID)
@@ -95,7 +101,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 	*
 	* @return XenForo_Model_UserGroup
 	*/
-	protected function _getCustomUserGroupRankModel() {
+	protected function _getUsergroupRanksModel() {
 		return $this->getModelFromCache('ThreePointStudio_UsergroupRanks_Model_UsergroupRanks');
 	}
 
@@ -106,8 +112,8 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 	*
 	* @return array
 	*/
-	protected function _getCustomUserGroupRankOrError($userGroupRankId) {
-		$userGroup = $this->_getCustomUserGroupRankModel()->getUserGroupRankById($userGroupRankId);
+	protected function _getUsergroupRankOrError($userGroupRankId) {
+		$userGroup = $this->_getUsergroupRanksModel()->getUsergroupRankById($userGroupRankId);
 		if (!$userGroup) {
 			throw $this->responseException($this->responseError(new XenForo_Phrase('3ps_usergroup_ranks_requested_usergroup_rank_not_found'), 404));
 		}

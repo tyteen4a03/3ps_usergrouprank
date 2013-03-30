@@ -7,6 +7,7 @@
 
 class ThreePointStudio_UsergroupRanks_Listener_Init {
 	public static function initDependencies(XenForo_Dependencies_Abstract $dependencies, array $data) {
+		XenForo_CacheRebuilder_Abstract::$builders += array('usergroupRanks' => 'ThreePointStudio_UsergroupRanks_CacheRebuilder_UserRankAssociation');
 		$cachingOption = XenForo_Application::get("options")->get("3ps_usergroup_ranks_caching_level");
 		if ($cachingOption > 0) {
 			$model = XenForo_Model::create('XenForo_Model_DataRegistry');

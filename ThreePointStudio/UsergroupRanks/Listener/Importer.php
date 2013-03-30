@@ -10,6 +10,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Importer {
 		switch ($class) {
 			case 'XenForo_Importer_vBulletin36x':
 			case 'XenForo_Importer_vBulletin':
+			case 'XenForo_Importer_myvBulletin4':
 				$extend[] = 'ThreePointStudio_UsergroupRanks_Importer_VBulletin';
 				break;
 			case 'XenForo_Importer_IPBoard32x':
@@ -18,10 +19,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Importer {
 				break;
 			case 'XenForo_Importer_PhpBb3':
 				//$extend[] = 'ThreePointStudio_UsergroupRanks_Importer_PhpBb3'; // Coming soon!
-				break;
-			case 'XenForo_Importer_myvBulletin4':
-				//$extend[] = 'ThreePointStudio_UsergroupRanks_Importer_VBulletin'; // Coming soon!
-				break;
+				break
 		}
 	}
 }

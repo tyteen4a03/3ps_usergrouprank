@@ -7,55 +7,11 @@
 
 class ThreePointStudio_UsergroupRanks_Listener_Template {
 
-	public static function processRanks(&$userGroupRanks, &$hookParams) {
-		foreach ($userGroupRanks as $key => &$userGroupRank) {
-			// Is this rank even active?
-			if (!$userGroupRank['rank_active']) {
-				unset($userGroupRanks[$key]);
-				continue;
-			}
-			// To keep or not to keep.
-			$match = XenForo_Helper_Criteria::userMatchesCriteria($userGroupRank['rank_user_criteria'], $hookParams['user']);
-			if (!$match) {
-				unset($userGroupRanks[$key]);
-				continue;
-			}
-		}
-	}
-
 	public static function templateHook($hookName, &$contents, array $hookParams, XenForo_Template_Abstract $template) {
 		if ($hookName == "message_user_info_avatar" or $hookName == "message_user_info_text") {
 			$options = XenForo_Application::get('options');
-			$cacheLevel = $options->get('3ps_usergroup_ranks_caching_level');
 			if (!$options->get('3ps_usergroup_ranks_system_active')) { // Don't show usergroup ranks
 				return;
-			}
-			$dr = XenForo_Model::create("XenForo_Model_DataRegistry");
-			$ugrModel = XenForo_Model::create('ThreePointStudio_UsergroupRanks_Model_UsergroupRanks');
-			// Try getting rank definition from cache
-			$userGroupRanks = ($cacheLevel > 0) ? $dr->get('3ps_ugr_rankDef') : null;
-			if ($userGroupRanks == null) {
-				// Get them from the database
-				$userGroupRanks = $ugrModel->getAllUserGroupRanks();
-				// Store them back into the cache
-				if ($cacheLevel > 0) $dr->set('3ps_ugr_rankDef', $userGroupRanks);
-			}
-			if ($cacheLevel == 2) { // User/Rank association is cached
-				// Get the association
-				$urAssoc = $dr->get("3ps_ugr_ura_" . $hookParams["user"]["user_id"]);
-				if ($urAssoc == null) {
-					// Doesn't exist in database, calculate and store them back into the database
-					self::processRanks($userGroupRanks, $hookParams);
-					$dr->set(("3ps_ugr_ura_" . $hookParams["user"]["user_id"]), implode(",", array_keys($userGroupRanks)));
-				} else {
-					$newRankDef = array();
-					foreach (explode(",", $urAssoc) as $ugrId) {
-						$newRankDef[$ugrId] = $userGroupRanks[$ugrId];
-					}
-					$userGroupRanks = $newRankDef;
-				}
-			} else {
-				self::processRanks($userGroupRanks, $hookParams);
 			}
 			$rankTemplate = $template->create("3ps_usergroup_ranks_displaybit", $template->getParams());
 			switch ($options->get('3ps_usergroup_ranks_display_style')) {
@@ -69,7 +25,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Template {
 					break;
 			}
 			$rt_viewParams = array(
-				'userGroupRanks' => $userGroupRanks,
+				'userGroupRanks' => XenForo_Model::create("ThreePointStudio_UsergroupRanks_Model_UsergroupRanks")->buildUserGroupRanksListForUser($hookParams["user"]),
 				'ugrList_posPad' => $posPad,
 			);
 			$rankTemplate->setParams($rt_viewParams);
@@ -108,6 +64,13 @@ class ThreePointStudio_UsergroupRanks_Listener_Template {
 	public static function templateCreate($templateName, array &$params, XenForo_Template_Abstract $template) {
 		if ($templateName == 'message_user_info') {
 			$template->preloadTemplate('3ps_usergroup_ranks_displaybit');
+		}
+	}
+
+	public static function templatePostRender($templateName, &$content, array &$containerData, XenForo_Template_Abstract $template) {
+		if ($templateName == 'tools_rebuild') {
+			// Add our rebuild
+			$content .= $template->create('3ps_usergroup_ranks_tools_rebuild', $template->getParams())->render();
 		}
 	}
 }

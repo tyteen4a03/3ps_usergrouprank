@@ -30,6 +30,8 @@ class ThreePointStudio_UsergroupRanks_Installer {
 	}
 
 	public static final function uninstall() {
+		// Invalidate all caches
+		XenForo_Model::create("ThreePointStudio_UsergroupRanks_Model_UsergroupRanks")->invalidateCache(0);
 		$db = XenForo_Application::getDb();
 		$db->query("DROP TABLE IF EXISTS `3ps_usergroup_ranks`");
 	}

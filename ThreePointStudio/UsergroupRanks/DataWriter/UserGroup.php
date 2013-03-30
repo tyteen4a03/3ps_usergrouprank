@@ -8,15 +8,15 @@
 class ThreePointStudio_UsergroupRanks_DataWriter_UserGroup extends XFCP_ThreePointStudio_UsergroupRanks_DataWriter_UserGroup {
 	protected function _postSave() {
 		parent::_postSave();
-		$this->rebuildDisplayStylePriorityCache();
+		$this->_getUsergroupRanksModelFromCache()->rebuildDisplayStylePriorityCache();
 	}
 
 	protected function _postDelete() {
 		parent::_postDelete();
-		$this->rebuildDisplayStylePriorityCache();
+		$this->_getUsergroupRanksModelFromCache()->rebuildDisplayStylePriorityCache();
 	}
 
-	public function rebuildDisplayStylePriorityCache() {
-		XenForo_Model::create('XenForo_Model_DataRegistry')->set('3ps_ugr_dspCache', XenForo_Application::getDb()->fetchPairs('SELECT user_group_id, display_style_priority FROM xf_user_group ORDER BY user_group_id ASC'));
+	public function _getUsergroupRanksModelFromCache() {
+		return $this->getModelFromCache("ThreePointStudio_UsergroupRanks_Model_UsergroupRanks");
 	}
 }

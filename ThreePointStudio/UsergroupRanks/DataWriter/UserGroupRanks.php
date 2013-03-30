@@ -85,7 +85,11 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_
 		return true;
 	}
 
-	public function _postSave() {
-		$this->_getUsergroupRanksModel()->rebuildRankDefinitionCache();
+	protected function _postSave() {
+		if (XenForo_Application::get("options")->get("3ps_usergroup_ranks_caching_level") > 0) {
+			$this->_getUsergroupRanksModel()->rebuildRankDefinitionCache();
+		}
 	}
+
+
 }
