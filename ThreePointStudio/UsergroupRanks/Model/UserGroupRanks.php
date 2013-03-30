@@ -50,7 +50,7 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 
 	/**
 	 * Invalidates all caches. Used for upgrades only.
-	 * @param $option Invalidation option.
+	 * @param int $option Invalidation option.
 	 */
 	public function invalidateCache($option) {
 		// 0 = All cache. 1 = Display Style Priority Cache, 2 = Usergroup Ranks definition, 3 = User/Rank association

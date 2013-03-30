@@ -51,6 +51,7 @@ class ThreePointStudio_UsergroupRanks_Model_DataRegistryPlus extends XenForo_Mod
 
 		}
 	}
+
 	public function getIdsMatchingTags($tags = array()) {
 		if ($this->cacheProperties["hasCache"]) {
 			return $this->_cache->getIdsMatchingTags($tags);

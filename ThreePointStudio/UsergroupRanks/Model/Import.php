@@ -9,8 +9,8 @@ class ThreePointStudio_UsergroupRanks_Model_Import extends XFCP_ThreePointStudio
 	/**
 	* Imports a usergroup rank
 	*
-	* @param integer Source ID
-	* @param array Data to import
+	* @param integer $oldId Source ID
+	* @param array $info Data to import
 	*
 	* @return integer Imported usergroup rank ID
 	*/

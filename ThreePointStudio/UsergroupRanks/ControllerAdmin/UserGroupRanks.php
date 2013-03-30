@@ -106,12 +106,13 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 	}
 
 	/**
-	* Gets the specified user group or throws an error.
-	*
-	* @param integer $usergroupRankId
-	*
-	* @return array
-	*/
+	 * Gets the specified user group or throws an error.
+	 *
+	 * @param int $userGroupRankId
+	 * @throws XenForo_ControllerResponse_Exception
+	 *
+	 * @return array
+	 */
 	protected function _getUsergroupRankOrError($userGroupRankId) {
 		$userGroup = $this->_getUsergroupRanksModel()->getUsergroupRankById($userGroupRankId);
 		if (!$userGroup) {

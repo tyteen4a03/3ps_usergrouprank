@@ -9,7 +9,6 @@ class ThreePointStudio_UsergroupRanks_Installer {
 	public static final function install($installedAddon) {
 		$db = XenForo_Application::getDb();
 		$version = is_array($installedAddon) ? $installedAddon['version_id'] : 0;
-		$origVersion = $version;
 		if ($version == 0) {
 			$db->query('CREATE TABLE IF NOT EXISTS `3ps_usergroup_ranks` (
 					  `rid` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -36,5 +35,3 @@ class ThreePointStudio_UsergroupRanks_Installer {
 		$db->query("DROP TABLE IF EXISTS `3ps_usergroup_ranks`");
 	}
 }
-
-?>

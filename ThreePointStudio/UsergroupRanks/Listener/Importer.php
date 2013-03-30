@@ -19,7 +19,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Importer {
 				break;
 			case 'XenForo_Importer_PhpBb3':
 				//$extend[] = 'ThreePointStudio_UsergroupRanks_Importer_PhpBb3'; // Coming soon!
-				break
+				break;
 		}
 	}
 }
