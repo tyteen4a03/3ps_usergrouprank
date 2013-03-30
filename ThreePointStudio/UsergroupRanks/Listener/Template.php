@@ -46,7 +46,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Template {
 				if ($urAssoc == null) {
 					// Doesn't exist in database, calculate and store them back into the database
 					self::processRanks($userGroupRanks, $hookParams);
-					$dr->set(("3ps_ugr_ura_" . $hookParams["user"]["user_id"]), implode(",", array_keys($rankDef)));
+					$dr->set(("3ps_ugr_ura_" . $hookParams["user"]["user_id"]), implode(",", array_keys($userGroupRanks)));
 				} else {
 					$newRankDef = array();
 					foreach (explode(",", $urAssoc) as $ugrId) {
