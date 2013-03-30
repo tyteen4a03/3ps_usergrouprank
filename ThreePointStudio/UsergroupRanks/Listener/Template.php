@@ -56,7 +56,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Template {
 		} elseif ($hookName == "footer") {
 			$copyrightText = new XenForo_Phrase("xenforo_copyright");
 			$search = '<div id="copyright">' . $copyrightText;
-			$replace = '<div id="copyright" style="text-align: left;">' . $copyrightText . '<br />' . new XenForo_Phrase("3ps_usergroup_ranks_credit_notice");
+			$replace = '<div id="copyright" style="text-align: left;">' . $copyrightText . '<br />' . new XenForo_Phrase("3ps_usergroup_ranks_credit_notice") . '<!-- This forum uses [3.studIo] Usergroup Ranks, licensed under the BSD 2-Clause Modified License. DO NOT REMOVE THIS NOTICE! -->';
 			$contents = str_replace($search, $replace, $contents);
 		}
 	}
