@@ -31,10 +31,8 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 	public function actionEdit() {
 		$userGroupRankId = $this->_input->filterSingle('rid', XenForo_Input::UINT);
 		$userGroupRank = $this->_getCustomUserGroupRankOrError($userGroupRankId);
-		$userGroupOptions = $this->_getCustomUserGroupRankModel()->getUserGroupOptions($userGroupRank["rank_usergroup"]);
 		$viewParams = array(
 			'userGroupRank' => $userGroupRank,
-			'userGroupOptions' => $userGroupOptions,
 			'userCriteria' => XenForo_Helper_Criteria::prepareCriteriaForSelection($userGroupRank['rank_user_criteria']),
 			'userCriteriaData' => XenForo_Helper_Criteria::getDataForUserCriteriaSelection(),
 			'showInactiveCriteria' => true
@@ -44,11 +42,9 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 	}
 
 	public function actionAdd() {
-		$userGroupOptions = $this->_getCustomUserGroupRankModel()->getUserGroupOptions(0);
 		$viewParams = array(
-			'userGroupOptions' => $userGroupOptions,
 			'userGroupRank' => array('rank_active' => 1),
-			'userCriteria' => XenForo_Helper_Criteria::prepareCriteriaForSelection($userGroupRank['rank_user_criteria']),
+			'userCriteria' => XenForo_Helper_Criteria::prepareCriteriaForSelection(''),
 			'userCriteriaData' => XenForo_Helper_Criteria::getDataForUserCriteriaSelection(),
 			'showInactiveCriteria' => true
 		);
@@ -80,16 +76,10 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 
 		$input = $this->_input->filter(array(
 			'rank_type' => XenForo_Input::UINT,
-			'rank_usergroup' => array(XenForo_Input::UINT, 'array' => true),
 			'rank_active' => XenForo_Input::BINARY,
 			'rank_content' => XenForo_Input::STRING,
-			// Old conditioning fields
-			'rank_postreq' => XenForo_Input::UINT,
-			'rank_postreq_amount' => XenForo_Input::UINT,
-			'rank_display_condition' => XenForo_Input::UINT,
-			'rank_style_priority_limit' => XenForo_Input::UINT,
-			// New conditioning fields
 			'rank_user_criteria' => XenForo_Input::ARRAY_SIMPLE,
+			'rank_styling_class' => XenForo_Input::STRING,
 			'rid' => XenForo_Input::UINT,
 		));
 

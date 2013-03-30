@@ -30,18 +30,22 @@ class ThreePointStudio_UsergroupRanks_Importer_vBulletin extends XFCP_ThreePoint
 		XenForo_Db::beginTransaction();
 		$total = isset($options['total']) ? $options['total'] : 0;
 		foreach ($ranks as $rank) {
+			$criteriaArray = array();
+			$newUg = $this->_mapLookUp($ugMap, $rank['usergroupid']);
+			$criteriaArray[] = array("rule" => "user_groups", "data" => array("user_group_ids" => array($newUg)));
+			if ($rank["minposts"] > 0) {
+				$criteriaArray[] = array("rule" => "messages_posted", "data" => array("messages" => $rank["minposts"]));
+			}
 			$input = array(
 				'rank_type' => $rank['type'],
-				'rank_usergroup' => $this->_mapLookUp($ugMap, $rank['usergroupid']),
 				'rank_active' => 1, // Always active
 				'rank_content' => $rank["rankimg"],
-				'rank_postreq' => ($rank['minposts'] > 0) ? 1 : 0, // If minposts has something, must be higher than
-				'rank_postreq_amount' => $rank['minposts'],
-				'rank_display_condition' => $rank['display'],
-				'rank_style_priority_limit' => 0
+				'rank_user_criteria' => serialize($criteriaArray),
+				'rank_styling_class' => ''
 			);
 			$dw = XenForo_DataWriter::create('ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks');
 			$dw->setImportMode(true);
+			if ($model->_retainKeys) $dw->set('rid', $rank["rankid"]);
 			$dw->bulkSet($input);
 			$dw->save();
 

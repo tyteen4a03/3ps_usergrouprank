@@ -7,7 +7,6 @@
 
 class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 	public static function criteriaUser($rule, array $data, array $user, &$returnValue) {
-		var_dump($returnValue);
 		// Get our DSPCache
 		$dspCache = XenForo_Model::create('XenForo_Model_DataRegistry')->get('3ps_dspCache');
 		// User usergroups

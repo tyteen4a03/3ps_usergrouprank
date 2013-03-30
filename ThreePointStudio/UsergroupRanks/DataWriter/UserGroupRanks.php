@@ -35,40 +35,23 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_
 				'type' => self::TYPE_UINT,
 				'default' => 0
 			),
-			"rank_usergroup" => array(
-				'type' => self::TYPE_UNKNOWN,
-				'default' => '',
-				'verification' => array('XenForo_DataWriter_Helper_User', 'verifyExtraUserGroupIds')
-			),
 			"rank_active" => array(
 				'type' => self::TYPE_BOOLEAN,
 				'default' => 1
 			),
 			"rank_content" => array(
 				'type' => self::TYPE_STRING,
-				'default' => ""
-			),
-			"rank_postreq" => array(
-				'type' => self::TYPE_UINT,
-				'default' => 0
-			),
-			"rank_postreq_amount" => array(
-				'type' => self::TYPE_UINT,
-				'default' => 0
-			),
-			"rank_display_condition" => array(
-				'type' => self::TYPE_UINT,
-				'default' => 0
-			),
-			"rank_style_priority_limit" => array(
-				'type' => self::TYPE_UINT,
-				'default' => 0
+				'default' => ''
 			),
 			'rank_user_criteria' => array(
 				'type' => self::TYPE_UNKNOWN,
 				'required' => true,
 				'verification' => array('$this', '_verifyCriteria')
 			),
+			'rank_styling_class' => array(
+				'type' => self::TYPE_STRING,
+				'default' => ''
+			)
 		)
 	);
 
@@ -100,5 +83,9 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_
 		$criteriaFiltered = XenForo_Helper_Criteria::prepareCriteriaForSave($criteria);
 		$criteria = serialize($criteriaFiltered);
 		return true;
+	}
+
+	public function _postSave() {
+		$this->_getUsergroupRanksModel()->rebuildRankDefinitionCache();
 	}
 }

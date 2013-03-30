@@ -22,9 +22,9 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	/**
 	* Gets the named usergroup rank.
 	*
-	* @param	array	$userGroupId
+	* @param array $userGroupId
 	*
-	* @return	array	Format: [user group id] => info
+	* @return array Format: [user group id] => info
 	*/
 	public function getUserGroupRankById($userGroupId) {
 		return $this->_getDb()->fetchRow('SELECT * FROM 3ps_usergroup_ranks WHERE rid = ?', $userGroupId);
@@ -33,9 +33,9 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	/**
 	* Inserts or Updates a usergroup rank.
 	*
-	* @param	array	$input	1D array with row content.
+	* @param array $input 1D array with row content.
 	*
-	* @return	int	Usergroup Rank ID
+	* @return int	Usergroup Rank ID
 	*/
 	public function insertOrUpdateUserGroupRank($input) {
 		$dw = XenForo_DataWriter::create('ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks');
@@ -48,13 +48,29 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	}
 
 	/**
-	 * Gets the list of possible extra user groups in "option" format.
-	 *
-	 * @param	string|array	$groupIds List of existing extra group IDs; may be serialized.
-	 *
-	 * @return	array List of	user group options (keys: label, value, selected)
+	 * Invalidates all caches. Used for upgrades only.
+	 * @param $option Invalidation option.
 	 */
-	public function getUserGroupOptions($groupIds) {
-		return $this->getModelFromCache('XenForo_Model_UserGroup')->getUserGroupOptions($groupIds);
+	public function invalidateCache($option) {
+		// 0 = All cache. 1 = Display Style Priority Cache, 2 = Usergroup Ranks definition, 3 = User/Rank association
+		$dr = XenForo_Model::create("XenForo_Model_DataRegistry");
+		$db = XenForo_Application::getDb();
+		switch ($option) {
+			case 0: // Hack baby
+			case 1:
+				$dr->delete("3ps_ugr_dspCache");
+				if ($option > 0) break;
+			case 2:
+				$dr->delete("3ps_ugr_rankDef");
+				if ($option > 0) break;
+			case 3:
+				// Go around DataRegistry because we need LIKE
+				$db->query("DELETE FROM xf_data_registry WHERE data_key LIKE '3ps_ugr_ura_%'");
+				break;
+		}
+	}
+
+	public function rebuildRankDefinitionCache() {
+		XenForo_Model::create("XenForo_Model_DataRegistry")->set("3ps_ugr_rankDef", $this->getAllUserGroupRanks());
 	}
 }
