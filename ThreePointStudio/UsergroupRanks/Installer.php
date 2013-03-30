@@ -7,6 +7,8 @@
 
 class ThreePointStudio_UsergroupRanks_Installer {
 	public static final function install($installedAddon) {
+		// Reinstalling
+		XenForo_Model::create("ThreePointStudio_UsergroupRanks_Model_UsergroupRanks")->invalidateCache(0);
 		$db = XenForo_Application::getDb();
 		$version = is_array($installedAddon) ? $installedAddon['version_id'] : 0;
 		if ($version == 0) {

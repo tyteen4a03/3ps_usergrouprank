@@ -54,7 +54,7 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	 */
 	public function invalidateCache($option) {
 		// 0 = All cache. 1 = Display Style Priority Cache, 2 = Usergroup Ranks definition, 3 = User/Rank association
-		$dr = $this->_getDataRegistryModelFromCache();
+		$dr = XenForo_Model::create("XenForo_Model_DataRegistry");
 		$db = XenForo_Application::getDb();
 		switch ($option) {
 			case 0: // Hack baby
@@ -75,21 +75,24 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 		XenForo_Model::create("XenForo_Model_DataRegistry")->set("3ps_ugr_rankDef", $this->getAllUserGroupRanks());
 	}
 
+	public function rebuildDisplayStylePriorityCache() {
+		XenForo_Model::create('XenForo_Model_DataRegistry')->set('3ps_ugr_dspCache', XenForo_Application::getDb()->fetchPairs('SELECT user_group_id, display_style_priority FROM xf_user_group ORDER BY user_group_id ASC'));	}
+
 	public function processRanks($ugrList, $user) {
+		$newUgrList = array();
 		foreach ($ugrList as $key => $ugr) {
 			// Is this rank even active?
 			if (!$ugr['rank_active']) {
-				unset($ugrList[$key]);
 				continue;
 			}
 			// To keep or not to keep.
 			$match = XenForo_Helper_Criteria::userMatchesCriteria($ugr['rank_user_criteria'], $user);
 			if (!$match) {
-				unset($ugrList[$key]);
 				continue;
 			}
+			$newUgrList[$key] = $ugr;
 		}
-		return $ugrList;
+		return $newUgrList;
 	}
 
 	public function getUsergroupRanksDefFromCache() {

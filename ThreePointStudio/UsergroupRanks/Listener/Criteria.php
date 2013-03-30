@@ -8,7 +8,12 @@
 class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 	public static function criteriaUser($rule, array $data, array $user, &$returnValue) {
 		// Get our DSPCache
-		$dspCache = XenForo_Model::create('XenForo_Model_DataRegistry')->get('3ps_dspCache');
+		$cacheLevel = XenForo_Application::get("options")->get("3ps_usergroup_ranks_caching_level");
+		if ($cacheLevel > 0) {
+			$dspCache = XenForo_Model::create('XenForo_Model_DataRegistry')->get('3ps_ugr_dspCache');
+		} else {
+			$dspCache = XenForo_Application::getDb()->fetchPairs('SELECT user_group_id, display_style_priority FROM xf_user_group ORDER BY user_group_id ASC');
+		}
 		// User usergroups
 		$secondaryUgs = explode(",", $user["secondary_group_ids"]);
 		$secUgsCount = count($secondaryUgs);
