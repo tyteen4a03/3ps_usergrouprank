@@ -20,11 +20,13 @@ class ThreePointStudio_UsergroupRanks_Installer {
 					  UNIQUE KEY `rid` (`rid`)
 					) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;');
 		}
-		if ($version < 2) { // 1.0.0 -> 1.5.0
-			$db->query('ALTER TABLE  `3ps_usergroup_ranks` CHANGE  `rank_type`  `rank_type` TINYINT UNSIGNED NOT NULL,
-						DROP COLUMN `rank_usergroup`, DROP COLUMN `rank_display_condition`, DROP COLUMN `rank_style_priority_limit`,
-						ADD COLUMN `rank_user_criteria` MEDIUMBLOB NOT NULL AFTER `rank_content`,
-						ADD COLUMN `rank_styling_class` LONGTEXT NOT NULL AFTER `rank_user_criteria`;');
+		if ($version > 0) { // Upgrade section only
+			if ($version < 2) { // 1.0.0 -> 1.5.0
+				$db->query('ALTER TABLE  `3ps_usergroup_ranks` CHANGE  `rank_type`  `rank_type` TINYINT UNSIGNED NOT NULL,
+							DROP COLUMN `rank_usergroup`, DROP COLUMN `rank_display_condition`, DROP COLUMN `rank_style_priority_limit`,
+							ADD COLUMN `rank_user_criteria` MEDIUMBLOB NOT NULL AFTER `rank_content`,
+							ADD COLUMN `rank_styling_class` LONGTEXT NOT NULL AFTER `rank_user_criteria`;');
+			}
 		}
 	}
 
