@@ -14,7 +14,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Init {
 			// Check if we already have DSP cached
 			if (!$model->get("3ps_ugr_dspCache")) {
 				// Caching time!
-				XenForo_DataWriter::create("XenForo_DataWriter_UserGroup")->rebuildDisplayStylePriorityCache();
+				XenForo_Model::create("ThreePointStudio_UsergroupRanks_Model_UsergroupRanks")->rebuildDisplayStylePriorityCache();
 			}
 			// Check if we already have rank definitions cached
 			if (!$model->get("3ps_ugr_rankDef")) {
