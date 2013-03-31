@@ -15,6 +15,11 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 		return $this->fetchAllKeyed('SELECT * FROM 3ps_usergroup_ranks ORDER BY rid', 'rid');
 	}
 
+	/**
+	 * Gets all active usergroup ranks.
+	 *
+	 * @return array
+	 */
 	public function getAllActiveUserGroupRanks() {
 		return $this->fetchAllKeyed('SELECT * FROM 3ps_usergroup_ranks WHERE rank_active = 1 ORDER BY rid', 'rid');
 	}
@@ -50,6 +55,7 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 
 	/**
 	 * Invalidates all caches. Used for upgrades only.
+	 *
 	 * @param int $option Invalidation option.
 	 */
 	public function invalidateCache($option) {
@@ -71,13 +77,26 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 		}
 	}
 
+	/**
+	 * Rebuilds the rank definition cache.
+	 */
 	public function rebuildRankDefinitionCache() {
 		XenForo_Model::create("XenForo_Model_DataRegistry")->set("3ps_ugr_rankDef", $this->getAllUserGroupRanks());
 	}
 
+	/**
+	 * Rebuilds the Display Style Priority Cache.
+	 */
 	public function rebuildDisplayStylePriorityCache() {
 		XenForo_Model::create('XenForo_Model_DataRegistry')->set('3ps_ugr_dspCache', XenForo_Application::getDb()->fetchPairs('SELECT user_group_id, display_style_priority FROM xf_user_group ORDER BY user_group_id ASC'));	}
 
+	/**
+	 * Internal function for rank processing. Feeds through XenForo_Helper_Criteria.
+	 *
+	 * @param $ugrList The usergroup ranks list
+	 * @param $user An user array.
+	 * @return array The processed usergroup ranks list
+	 */
 	public function processRanks($ugrList, $user) {
 		$newUgrList = array();
 		foreach ($ugrList as $key => $ugr) {
@@ -95,6 +114,11 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 		return $newUgrList;
 	}
 
+	/**
+	 *  Fetches the usergroup rank definition from cache, or from the database.
+	 *
+	 * @return array|null All usergroup ranks.
+	 */
 	public function getUsergroupRanksDefFromCache() {
 		$dr = XenForo_Model::create("XenForo_Model_DataRegistry");
 		$cacheLevel = XenForo_Application::get('options')->get('3ps_usergroup_ranks_caching_level');
@@ -108,6 +132,14 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 		return $userGroupRanks;
 	}
 
+	/**
+	 * Builds the user-rank association.
+	 *
+	 * @param $ugrList
+	 * @param $user An user array.
+	 * @param bool $ignoreCache Whether the DataRegistry entry should be ignored. Used for cache rebuilding.
+	 * @return array The usergroup ranks list applicable to the user.
+	 */
 	public function buildUserRankAssociation($ugrList, $user, $ignoreCache = false) {
 		// Get the association
 		$dr = XenForo_Model::create("XenForo_Model_DataRegistry");
@@ -127,6 +159,12 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 		return $ugrList;
 	}
 
+	/**
+	 *  Builds usergroup rank list using an $user array. Entry point for display uses.
+	 *
+	 * @param $user The user array
+	 * @return array Usergroup ranks to use
+	 */
 	public function buildUserGroupRanksListForUser($user) {
 		$options = XenForo_Application::get('options');
 		$cacheLevel = $options->get('3ps_usergroup_ranks_caching_level');
