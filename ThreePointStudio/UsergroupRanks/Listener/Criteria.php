@@ -127,29 +127,10 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				$returnValue = true;
 				break;
 			// Display Style Priority - Secondary Usergroups (Any)
-			case '3ps_usergroup_ranks_secugs_dsp_lower_any':
-				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] > intval($data['dsp'])) { // Smaller? Good!
-						$returnValue = false;
-						return;
-					}
-				}
-				$returnValue = true;
-				break;
-			case '3ps_usergroup_ranks_secugs_dsp_higher_any':
-				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] < intval($data['dsp'])) { // Bigger? Good!
-						$returnValue = false;
-						return;
-					}
-				}
-				$returnValue = true;
-				break;
-			// Display Style Priority - Secondary Usergroups (All) 
 			case '3ps_usergroup_ranks_secugs_dsp_lower_all':
 				$matchList = 0;
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] < intval($data['dsp'])) { // Bigger? Reject
+					if ($dspCache[$ug] < intval($data['dsp'])) { // Smaller? Good!
 						$matchList++;
 					}
 				}
@@ -158,11 +139,30 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_secugs_dsp_higher_all':
 				$matchList = 0;
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] > intval($data['dsp'])) { // Smaller? Reject
+					if ($dspCache[$ug] > intval($data['dsp'])) { // Bigger? Good!
 						$matchList++;
 					}
 				}
 				$returnValue = ($matchList == $secUgsCount);
+				break;
+			// Display Style Priority - Secondary Usergroups (All) 
+			case '3ps_usergroup_ranks_secugs_dsp_lower_all':
+				foreach ($secondaryUgs as $ug) {
+					if ($dspCache[$ug] > intval($data['dsp'])) { // Bigger? Reject
+						$returnValue = false;
+						return;
+					}
+				}
+				$returnValue = true;
+				break;
+			case '3ps_usergroup_ranks_secugs_dsp_higher_all':
+				foreach ($secondaryUgs as $ug) {
+					if ($dspCache[$ug] < intval($data['dsp'])) { // Smaller? Reject
+						$returnValue = false;
+						return;
+					}
+				}
+				$returnValue = true;
 				break;
 			// Display Style Priority - Any usergroup
 			case '3ps_usergroup_ranks_anyugs_dsp_lower':
