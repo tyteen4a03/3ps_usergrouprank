@@ -20,20 +20,17 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 		$primaryUg = $user['user_group_id'];
 		$displayUg = $user['display_style_group_id'];
 		$allUgs = array_merge((array)$primaryUg, $secondaryUgs);
-		// Usergroup Rank usergroups
-		$rank_allUgs = $data['user_group_ids'];
-		$rank_dspLimit = intval($data['dsp']);
 		switch ($rule) {
 			// Is/Is Not primary usergroup
 			case '3ps_usergroup_ranks_is_primary_ug':
 			case '3ps_usergroup_ranks_is_not_primary_ug':
-				$match = in_array($primaryUg, $rank_allUgs);
+				$match = in_array($primaryUg, $data['user_group_ids']);
 				$returnValue = ($rule == "3ps_usergroup_ranks_is_primary_ug") ? $match : !$match;
 				break;
 			// Is/Is Not display usergroup
 			case '3ps_usergroup_ranks_is_display_ug':
 			case '3ps_usergroup_ranks_is_not_display_ug':
-				$match = in_array($displayUg, $rank_allUgs);
+				$match = in_array($displayUg, $data['user_group_ids']);
 				$returnValue = ($rule == "3ps_usergroup_ranks_is_display_ug") ? $match : !$match;
 				break;
 			// Is/Is not in secondary usergroup - any
@@ -41,7 +38,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_is_not_in_secondary_ug_any':
 				$match = false;
 				foreach ($secondaryUgs as $ug) {
-					if (in_array($ug, $rank_allUgs)) {
+					if (in_array($ug, $data['user_group_ids'])) {
 						$match = true;
 						break;
 					}
@@ -53,7 +50,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_is_not_in_secondary_ug_all':
 				$matchList = 0;
 				foreach ($secondaryUgs as $ug) {
-					if (in_array($ug, $rank_allUgs)) {
+					if (in_array($ug, $data['user_group_ids'])) {
 						$matchList++;
 					}
 				}
@@ -65,7 +62,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_is_not_in_ugs_all':
 				$match = true;
 				foreach ($secondaryUgs as $ug) {
-					if (!in_array($ug, $rank_allUgs)) {
+					if (!in_array($ug, $data['user_group_ids'])) {
 						$match = false;
 						break;
 					}
@@ -83,7 +80,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			// Display Style Priority - All Usergroups
 			case '3ps_usergroup_ranks_allugs_dsp_lower':
 				foreach ($allUgs as $ug) {
-					if ($dspCache[$ug] > $rank_dspLimit) { // Bigger? Reject
+					if ($dspCache[$ug] > intval($data['dsp'])) { // Bigger? Reject
 						$returnValue = false;
 						return;
 					}
@@ -92,7 +89,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				break;
 			case '3ps_usergroup_ranks_allugs_dsp_higher':
 				foreach ($allUgs as $ug) {
-					if ($dspCache[$ug] < $rank_dspLimit) { // Smaller? Reject
+					if ($dspCache[$ug] < intval($data['dsp'])) { // Smaller? Reject
 						$returnValue = false;
 						return;
 					}
@@ -101,14 +98,14 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				break;
 			// Display Style Priority - Primary Usergroup only
 			case '3ps_usergroup_ranks_priug_dsp_lower':
-				if ($dspCache[$primaryUg] > $rank_dspLimit) { // Bigger? Reject
+				if ($dspCache[$primaryUg] > intval($data['dsp'])) { // Bigger? Reject
 					$returnValue = false;
 					return;
 				}
 				$returnValue = true;
 				break;
 			case '3ps_usergroup_ranks_priug_dsp_higher':
-				if ($dspCache[$primaryUg] < $rank_dspLimit) { // Smaller? Reject
+				if ($dspCache[$primaryUg] < intval($data['dsp'])) { // Smaller? Reject
 					$returnValue = false;
 					return;
 				}
@@ -116,14 +113,14 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				break;
 			// Display Style Priority - Display Usergroup only
 			case '3ps_usergroup_ranks_displayug_dsp_lower':
-				if ($dspCache[$displayUg] > $rank_dspLimit) { // Bigger? Reject
+				if ($dspCache[$displayUg] > intval($data['dsp'])) { // Bigger? Reject
 					$returnValue = false;
 					return;
 				}
 				$returnValue = true;
 				break;
 			case '3ps_usergroup_ranks_displayug_dsp_higher':
-				if ($dspCache[$displayUg] < $rank_dspLimit) { // Smaller? Reject
+				if ($dspCache[$displayUg] < intval($data['dsp'])) { // Smaller? Reject
 					$returnValue = false;
 					return;
 				}
@@ -132,7 +129,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			// Display Style Priority - Secondary Usergroups (Any)
 			case '3ps_usergroup_ranks_secugs_dsp_lower_any':
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] > $rank_dspLimit) { // Smaller? Good!
+					if ($dspCache[$ug] > intval($data['dsp'])) { // Smaller? Good!
 						$returnValue = false;
 						return;
 					}
@@ -141,7 +138,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				break;
 			case '3ps_usergroup_ranks_secugs_dsp_higher_any':
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] < $rank_dspLimit) { // Bigger? Good!
+					if ($dspCache[$ug] < intval($data['dsp'])) { // Bigger? Good!
 						$returnValue = false;
 						return;
 					}
@@ -152,7 +149,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_secugs_dsp_lower_all':
 				$matchList = 0;
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] < $rank_dspLimit) { // Bigger? Reject
+					if ($dspCache[$ug] < intval($data['dsp'])) { // Bigger? Reject
 						$matchList++;
 					}
 				}
@@ -161,7 +158,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_secugs_dsp_higher_all':
 				$matchList = 0;
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] > $rank_dspLimit) { // Smaller? Reject
+					if ($dspCache[$ug] > intval($data['dsp'])) { // Smaller? Reject
 						$matchList++;
 					}
 				}
@@ -170,7 +167,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			// Display Style Priority - Any usergroup
 			case '3ps_usergroup_ranks_anyugs_dsp_lower':
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] < $rank_dspLimit) { // Smaller? Good!
+					if ($dspCache[$ug] < intval($data['dsp'])) { // Smaller? Good!
 						$returnValue = true;
 						return;
 					}
@@ -179,7 +176,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				break;
 			case '3ps_usergroup_ranks_anyugs_dsp_higher':
 				foreach ($secondaryUgs as $ug) {
-					if ($dspCache[$ug] > $rank_dspLimit) { // Bigger? Good!
+					if ($dspCache[$ug] > intval($data['dsp'])) { // Bigger? Good!
 						$returnValue = true;
 						return;
 					}
