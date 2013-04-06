@@ -27,6 +27,10 @@ class ThreePointStudio_UsergroupRanks_Installer {
 							ADD COLUMN `rank_user_criteria` MEDIUMBLOB NOT NULL AFTER `rank_content`,
 							ADD COLUMN `rank_styling_class` LONGTEXT NOT NULL AFTER `rank_user_criteria`;');
 			}
+			// All upgrades require a cache invalidation
+			$model = XenForo_Model::create("ThreePointStudio_UsergroupRanks_Model_UsergroupRanks");
+			$model->invalidateCache(1);
+			$model->invalidateCache(2);
 		}
 	}
 

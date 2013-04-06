@@ -6,7 +6,7 @@
 */
 
 class ThreePointStudio_UsergroupRanks_Listener_Criteria {
-	private static function _intvalItems($item, $key) {
+	private static function _intvalItems(&$item, $key) {
 		$item = intval($item);
 	}
 
@@ -63,6 +63,11 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_is_primary_ug':
 			case '3ps_usergroup_ranks_is_not_primary_ug':
 				$match = in_array($primaryUg, $dataUgs);
+				if (intval($user["user_id"]) == 6) {
+					throw new Exception(var_dump($primaryUg) . " " . var_dump($dataUgs) . " " . var_dump($match));
+				} else {
+					return; //die(var_dump($user["user_id"]));
+				}
 				$returnValue = ($rule == "3ps_usergroup_ranks_is_primary_ug") ? $match : !$match;
 				break;
 			// Is/Is Not display usergroup
@@ -99,7 +104,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_is_in_ugs_all':
 			case '3ps_usergroup_ranks_is_not_in_ugs_all':
 				$match = true;
-				foreach ($secondaryUgs as $ug) {
+				foreach ($allUgs as $ug) {
 					if (!in_array($ug, $dataUgs)) {
 						$match = false;
 						break;
@@ -120,7 +125,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				foreach ($allUgs as $ug) {
 					if ($dspCache[$ug] > $dataDSP) { // Bigger? Reject
 						$returnValue = false;
-						break;
+						break 2;
 					}
 				}
 				$returnValue = true;
@@ -129,7 +134,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				foreach ($allUgs as $ug) {
 					if ($dspCache[$ug] < $dataDSP) { // Smaller? Reject
 						$returnValue = false;
-						break;
+						break 2;
 					}
 				}
 				$returnValue = true;
@@ -170,7 +175,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				foreach ($secondaryUgs as $ug) {
 					if ($dspCache[$ug] < $dataDSP) { // Smaller? Good!
 						$returnValue = true;
-						break;
+						break 2;
 					}
 				}
 				break;
@@ -179,7 +184,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				foreach ($secondaryUgs as $ug) {
 					if ($dspCache[$ug] > $dataDSP) { // Bigger? Good!
 						$returnValue = true;
-						break;
+						break 2;
 					}
 				}
 				break;
@@ -188,7 +193,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				foreach ($secondaryUgs as $ug) {
 					if ($dspCache[$ug] > $dataDSP) { // Bigger? Reject
 						$returnValue = false;
-						break;
+						break 2;
 					}
 				}
 				$returnValue = true;
@@ -197,7 +202,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				foreach ($secondaryUgs as $ug) {
 					if ($dspCache[$ug] < $dataDSP) { // Smaller? Reject
 						$returnValue = false;
-						break;
+						break 2;
 					}
 				}
 				$returnValue = true;
@@ -207,7 +212,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				foreach ($allUgs as $ug) {
 					if ($dspCache[$ug] < $dataDSP) { // Smaller? Good!
 						$returnValue = true;
-						break;
+						break 2;
 					}
 				}
 				$returnValue = false;
@@ -216,7 +221,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 				foreach ($allUgs as $ug) {
 					if ($dspCache[$ug] > $dataDSP) { // Bigger? Good!
 						$returnValue = true;
-						break;
+						break 2;
 					}
 				}
 				$returnValue = false;

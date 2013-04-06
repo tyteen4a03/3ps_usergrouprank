@@ -88,7 +88,8 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	 * Rebuilds the Display Style Priority Cache.
 	 */
 	public function rebuildDisplayStylePriorityCache() {
-		XenForo_Model::create('XenForo_Model_DataRegistry')->set('3ps_ugr_dspCache', XenForo_Application::getDb()->fetchPairs('SELECT user_group_id, display_style_priority FROM xf_user_group ORDER BY user_group_id ASC'));	}
+		XenForo_Model::create('XenForo_Model_DataRegistry')->set('3ps_ugr_dspCache', XenForo_Application::getDb()->fetchPairs('SELECT user_group_id, display_style_priority FROM xf_user_group ORDER BY user_group_id ASC'));
+	}
 
 	/**
 	 * Internal function for rank processing. Feeds through XenForo_Helper_Criteria.
@@ -106,6 +107,7 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 			}
 			// To keep or not to keep.
 			$match = XenForo_Helper_Criteria::userMatchesCriteria($ugr['rank_user_criteria'], $user);
+			//echo(var_dump($match) . " for rank id " . $ugr["rid"] . " for " . $user["user_id"] . "<br />");
 			if (!$match) {
 				continue;
 			}

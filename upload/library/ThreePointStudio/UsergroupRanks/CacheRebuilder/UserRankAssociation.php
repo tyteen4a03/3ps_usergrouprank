@@ -32,8 +32,7 @@ class ThreePointStudio_UsergroupRanks_CacheRebuilder_UserRankAssociation extends
 	 * @see XenForo_CacheRebuilder_Abstract::rebuild()
 	 */
 	public function rebuild($position = 0, array &$options = array(), &$detailedMessage = '') {
-		$options['batch'] = isset($options['batch']) ? $options['batch'] : 100;
-		$options['batch'] = max(1, $options['batch']);
+		$options['batch'] = max(1, isset($options['batch']) ? $options['batch'] : 250);
 		$options['existing_entries_only'] = isset($options['existing_entries_only']) ? $options['existing_entries_only'] : true;
 
 		$db = XenForo_Application::getDb();
