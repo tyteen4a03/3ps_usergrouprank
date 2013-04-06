@@ -63,11 +63,6 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_is_primary_ug':
 			case '3ps_usergroup_ranks_is_not_primary_ug':
 				$match = in_array($primaryUg, $dataUgs);
-				if (intval($user["user_id"]) == 6) {
-					throw new Exception(var_dump($primaryUg) . " " . var_dump($dataUgs) . " " . var_dump($match));
-				} else {
-					return; //die(var_dump($user["user_id"]));
-				}
 				$returnValue = ($rule == "3ps_usergroup_ranks_is_primary_ug") ? $match : !$match;
 				break;
 			// Is/Is Not display usergroup

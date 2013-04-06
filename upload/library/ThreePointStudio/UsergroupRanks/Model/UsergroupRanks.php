@@ -106,8 +106,7 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 				continue;
 			}
 			// To keep or not to keep.
-			$match = XenForo_Helper_Criteria::userMatchesCriteria($ugr['rank_user_criteria'], $user);
-			//echo(var_dump($match) . " for rank id " . $ugr["rid"] . " for " . $user["user_id"] . "<br />");
+			$match = XenForo_Helper_Criteria::userMatchesCriteria($ugr['rank_user_criteria'], false, $user);
 			if (!$match) {
 				continue;
 			}
