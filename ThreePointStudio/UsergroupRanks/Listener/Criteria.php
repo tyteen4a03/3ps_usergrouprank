@@ -41,11 +41,11 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_is_not_in_secondary_ug_all':
 			case '3ps_usergroup_ranks_is_in_ugs_all':
 			case '3ps_usergroup_ranks_is_not_in_ugs_all':
-				$dataUgs = explode(",", $data['user_group_ids']);
+				$dataUgs = $data['user_group_ids'];
 				array_walk($dataUgs, "self::_intvalItems");
 				break;
 			case '3ps_usergroup_ranks_allugs_dsp_lower':
-			case '3ps_usergroup_ranks_allugs_dsp_higher'
+			case '3ps_usergroup_ranks_allugs_dsp_higher':
 			case '3ps_usergroup_ranks_displayug_dsp_lower':
 			case '3ps_usergroup_ranks_displayug_dsp_higher':
 			case '3ps_usergroup_ranks_secugs_dsp_lower_any':
@@ -54,7 +54,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_secugs_dsp_higher_all':
 			case '3ps_usergroup_ranks_anyugs_dsp_lower':
 			case '3ps_usergroup_ranks_anyugs_dsp_higher':
-				$dataDSP = intval($data["dsp");
+				$dataDSP = intval($data["dsp"]);
 				break;
 		}
 
