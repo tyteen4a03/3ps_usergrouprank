@@ -1,6 +1,6 @@
 <?php
 /*
-* Usergroup Ranks v1.5.6 written by tyteen4a03@3.studIo.
+* Usergroup Ranks v1.6.0 written by tyteen4a03@3.studIo.
 * This software is licensed under the BSD 2-Clause modified License.
 * See the LICENSE file within the package for details.
 */
@@ -9,26 +9,31 @@ class ThreePointStudio_UsergroupRanks_Installer {
 	public static final function install($installedAddon) {
 		$db = XenForo_Application::getDb();
 		$version = is_array($installedAddon) ? $installedAddon['version_id'] : 0;
-		if ($version == 0) {
+		$model = XenForo_Model::create("ThreePointStudio_UsergroupRanks_Model_UsergroupRanks");
+		if ($version == 0) { // Initial install
 			$db->query('CREATE TABLE IF NOT EXISTS `3ps_usergroup_ranks` (
-					  `rid` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-					  `rank_type` mediumint(8) unsigned NOT NULL,
-					  `rank_active` tinyint(1) unsigned NOT NULL,
-					  `rank_content` text COLLATE utf8_unicode_ci NOT NULL,
+					  `rid` BIGINT(20) unsigned NOT NULL AUTO_INCREMENT,
+					  `rank_type` MEDIUMINT(8) unsigned NOT NULL,
+					  `rank_active` TINYINT(1) unsigned NOT NULL,
+					  `rank_content` TEXT COLLATE utf8_unicode_ci NOT NULL,
 					  `rank_user_criteria` MEDIUMBLOB NOT NULL,
-					  `rank_styling_class` LONGTEXT NOT NULL,
+					  `rank_styling_class` TEXT NOT NULL,
+					  `rank_sprite_params` TEXT NOT NULL,
 					  UNIQUE KEY `rid` (`rid`)
-					) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;');
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;');
 		}
 		if ($version > 0) { // Upgrade section only
 			if ($version < 2) { // 1.0.0 -> 1.5.0
-				$db->query('ALTER TABLE  `3ps_usergroup_ranks` CHANGE  `rank_type`  `rank_type` TINYINT UNSIGNED NOT NULL,
+				$db->query('ALTER TABLE `3ps_usergroup_ranks` CHANGE `rank_type` `rank_type` TINYINT UNSIGNED NOT NULL,
 							DROP COLUMN `rank_usergroup`, DROP COLUMN `rank_display_condition`, DROP COLUMN `rank_style_priority_limit`,
 							ADD COLUMN `rank_user_criteria` MEDIUMBLOB NOT NULL AFTER `rank_content`,
-							ADD COLUMN `rank_styling_class` LONGTEXT NOT NULL AFTER `rank_user_criteria`;');
+							ADD COLUMN `rank_styling_class` TEXT NOT NULL AFTER `rank_user_criteria`;');
+			}
+			if ($version < 3) { // 1.5.5 to 1.6.0
+				$db->query('ALTER TABLE  `3ps_usergroup_ranks` CHANGE `rank_styling_class` `rank_styling_class` TEXT NOT NULL, ADD `rank_sprite_params` TEXT NOT NULL');
+				//$model->invalidateCache(3);
 			}
 			// All upgrades require a cache invalidation
-			$model = XenForo_Model::create("ThreePointStudio_UsergroupRanks_Model_UsergroupRanks");
 			$model->invalidateCache(1);
 			$model->invalidateCache(2);
 		}

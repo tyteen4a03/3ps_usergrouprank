@@ -1,15 +1,11 @@
 <?php
 /*
-* Usergroup Ranks v1.5.6 written by tyteen4a03@3.studIo.
+* Usergroup Ranks v1.6.0 written by tyteen4a03@3.studIo.
 * This software is licensed under the BSD 2-Clause modified License.
 * See the LICENSE file within the package for details.
 */
 
 class ThreePointStudio_UsergroupRanks_Listener_Criteria {
-	private static function _intvalItems(&$item, $key) {
-		$item = intval($item);
-	}
-
 	public static function criteriaUser($rule, array $data, array $user, &$returnValue) {
 		// Get our DSPCache
 		$cacheLevel = XenForo_Application::get("options")->get("3ps_usergroup_ranks_caching_level");
@@ -25,7 +21,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 		$secondaryUgs = explode(",", $user["secondary_group_ids"]);
 		$secUgsCount = count($secondaryUgs);
 		// Walk to make sure everything is int
-		array_walk($secondaryUgs, "self::_intvalItems");
+		array_walk($secondaryUgs, "ThreePointStudio_UsergroupRanks_Helpers::_intvalItems");
 		$allUgs = array_merge((array)$primaryUg, $secondaryUgs);
 
 		// Set up the required environment information
@@ -42,7 +38,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_is_in_ugs_all':
 			case '3ps_usergroup_ranks_is_not_in_ugs_all':
 				$dataUgs = $data['user_group_ids'];
-				array_walk($dataUgs, "self::_intvalItems");
+				array_walk($dataUgs, "ThreePointStudio_UsergroupRanks_Helpers::_intvalItems");
 				break;
 			case '3ps_usergroup_ranks_allugs_dsp_lower':
 			case '3ps_usergroup_ranks_allugs_dsp_higher':

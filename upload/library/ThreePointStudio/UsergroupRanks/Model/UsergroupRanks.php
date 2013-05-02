@@ -1,6 +1,6 @@
 <?php
 /*
-* Usergroup Ranks v1.5.6 written by tyteen4a03@3.studIo.
+* Usergroup Ranks v1.6.0 written by tyteen4a03@3.studIo.
 * This software is licensed under the BSD 2-Clause modified License.
 * See the LICENSE file within the package for details.
 */
@@ -71,8 +71,10 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 				$dr->delete("3ps_ugr_rankDef");
 				if ($option > 0) break;
 			case 3:
-				// Go around DataRegistry because we need LIKE
-				$db->query("DELETE FROM xf_data_registry WHERE data_key LIKE '3ps_ugr_ura_%'");
+				$uraList = $db->fetchRow("SELECT data_key FROM xf_data_registry WHERE data_key LIKE '3ps_ugr_ura_%'");
+				foreach ($uraList as $uraEntry) {
+					$dr->delete($uraEntry);
+				}
 				break;
 		}
 	}
@@ -92,6 +94,43 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	}
 
 	/**
+	 * Rebuilds the rank CSS sprite classes.
+	 */
+	public function rebuildRankCSSDefinitionCache() {
+		$ugrs = $this->getAllUserGroupRanks();
+		$cssBgAssoc = $cssBgAssocTable = array();
+		$dr = XenForo_Model::create("XenForo_Model_DataRegistry");
+		$cachingLevel = XenForo_Application::get("options")->get("3ps_usergroup_ranks_caching_level");
+		$cssText = $cssBackground = "";
+
+		foreach ($ugrs as $key => $ugr) {
+			if ($ugr["rank_type"] == 2) {
+				// CSS Sprites processing
+				if ($spriteId = array_search($ugr["rank_content"], $cssBgAssoc)) {
+					// Use the preexisting entry
+					$ugr["_useCSSSpriteSheetId"] = $spriteId;
+				} else {
+					$cssBgAssoc[] = $ugr["rank_content"];
+					end($cssBgAssoc);
+					$ugr["_useCSSSpriteSheetId"] = $cssBgAssocTable[$key] = key($cssBgAssoc);
+				}
+				if ($cachingLevel > 0) {
+					$spriteParams = unserialize($ugr["rank_sprite_params"]);
+					$cssText = ".3ps_ugr_rankSpriteContent" . $key . " {" . sprintf("background-position:%dpx %dpx;width:%dpx;height:%dpx;", $spriteParams["x"], $spriteParams["y"], $spriteParams["w"], $spriteParams["h"]) . "}" . PHP_EOL;
+				}
+			}
+		}
+		if ($cachingLevel > 0) {
+			// Generate the CSS
+			foreach ($cssBgAssoc as $key => $value) {
+				$cssBackground .= ".3ps_ugr_rankSpriteBg" . $key . " {background:url('" . $value . "') no-repeat top left;}" . PHP_EOL;
+			}
+			$dr->set("3ps_ugr_spriteCSS", $cssBackground . $cssText);
+			$dr->set("3ps_ugr_spriteBgAssoc", $cssBgAssocTable);
+		}
+	}
+
+	/**
 	 * Internal function for rank processing. Feeds through XenForo_Helper_Criteria.
 	 *
 	 * @param $ugrList The usergroup ranks list
@@ -99,20 +138,47 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	 * @return array The processed usergroup ranks list
 	 */
 	public function processRanks($ugrList, $user) {
-		$newUgrList = array();
+		$dr = XenForo_Model::create("XenForo_Model_DataRegistry");
+		$cachingLevel = XenForo_Application::get("options")->get("3ps_usergroup_ranks_caching_level");
+		$cssText = $cssBackground = "";
+		$cssBgAssoc = $cssBgAssocTable = array();
 		foreach ($ugrList as $key => $ugr) {
 			// Is this rank even active?
 			if (!$ugr['rank_active']) {
+				unset($ugrList[$key]);
 				continue;
 			}
 			// To keep or not to keep.
 			$match = XenForo_Helper_Criteria::userMatchesCriteria($ugr['rank_user_criteria'], false, $user);
 			if (!$match) {
+				unset($ugrList[$key]);
 				continue;
 			}
-			$newUgrList[$key] = $ugr;
+			if ($ugr["rank_type"] == 2) {
+				// CSS Sprites processing
+				if ($spriteId = array_search($ugr["rank_content"], $cssBgAssoc)) {
+					// Use the preexisting entry
+					$ugr["_useCSSSpriteSheetId"] = $spriteId;
+				} else {
+					$cssBgAssoc[] = $ugr["rank_content"];
+					end($cssBgAssoc);
+					$ugr["_useCSSSpriteSheetId"] = $cssBgAssocTable[$key] = key($cssBgAssoc);
+				}
+				if ($cachingLevel > 0) {
+					$spriteParams = unserialize($ugr["rank_sprite_params"]);
+					$cssText = ".3ps_ugr_rankSpriteContent" . $key . " {" . sprintf("background-position:%dpx %dpx;width:%dpx;height:%dpx;", $spriteParams["x"], $spriteParams["y"], $spriteParams["w"], $spriteParams["h"]) . "}" . PHP_EOL;
+				}
+			}
 		}
-		return $newUgrList;
+		if ($cachingLevel > 0) {
+			// Generate the CSS
+			foreach ($cssBgAssoc as $key => $value) {
+				$cssBackground .= ".3ps_ugr_rankSpriteBg" . $key . " {background: url('" . $value . "') no-repeat top left;}" . PHP_EOL;
+			}
+			$dr->set("3ps_ugr_spriteCSS", $cssBackground . $cssText);
+			$dr->set("3ps_ugr_spriteBgAssoc", $cssBgAssocTable);
+		}
+		return $ugrList;
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <?php
 /*
-* Usergroup Ranks v1.5.6 written by tyteen4a03@3.studIo.
+* Usergroup Ranks v1.6.0 written by tyteen4a03@3.studIo.
 * This software is licensed under the BSD 2-Clause modified License.
 * See the LICENSE file within the package for details.
 */
@@ -31,6 +31,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 	public function actionEdit() {
 		$userGroupRankId = $this->_input->filterSingle('rid', XenForo_Input::UINT);
 		$userGroupRank = $this->_getUsergroupRankOrError($userGroupRankId);
+		$userGroupRank["rank_sprite_params"] = unserialize($userGroupRank["rank_sprite_params"]);
 		$viewParams = array(
 			'userGroupRank' => $userGroupRank,
 			'userCriteria' => XenForo_Helper_Criteria::prepareCriteriaForSelection($userGroupRank['rank_user_criteria']),
@@ -59,8 +60,7 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 			$dw->setExistingData($this->_input->filterSingle('rid', XenForo_Input::STRING));
 			$dw->delete();
 			XenForo_Model::create("ThreePointStudio_UsergroupRanks_Model_UsergroupRanks")->rebuildRankDefinitionCache();
-			$redirectMessage = new XenForo_Phrase('deletion_successful');
-			return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, XenForo_Link::buildAdminLink('3ps-usergroup-ranks'), $redirectMessage);
+			return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, XenForo_Link::buildAdminLink('3ps-usergroup-ranks'), new XenForo_Phrase('deletion_successful'));
 		} else {
 			$userGroupRank = $this->_getUsergroupRankOrError($userGroupRankId);
 			$userGroupRankContent = ($userGroupRank['rank_type'] === 0) ? '<img src="' . $userGroupRank["rank_content"] . '" />' : $userGroupRank["rank_content"];
@@ -86,9 +86,9 @@ class ThreePointStudio_UsergroupRanks_ControllerAdmin_UsergroupRanks extends Xen
 			'rank_content' => XenForo_Input::STRING,
 			'rank_user_criteria' => XenForo_Input::ARRAY_SIMPLE,
 			'rank_styling_class' => XenForo_Input::STRING,
-			'rid' => XenForo_Input::UINT,
+			'rank_sprite_params' => array(XenForo_Input::INT, array('array' => true)),
+			'rid' => XenForo_Input::UINT
 		));
-
 		$ugrID = $this->_getUsergroupRanksModel()->insertOrUpdateUserGroupRank($input);
 		return $this->responseRedirect(
 			XenForo_ControllerResponse_Redirect::SUCCESS,

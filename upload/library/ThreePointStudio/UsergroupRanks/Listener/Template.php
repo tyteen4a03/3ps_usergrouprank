@@ -1,6 +1,6 @@
 <?php
 /*
-* Usergroup Ranks v1.5.6 written by tyteen4a03@3.studIo.
+* Usergroup Ranks v1.6.0 written by tyteen4a03@3.studIo.
 * This software is licensed under the BSD 2-Clause modified License.
 * See the LICENSE file within the package for details.
 */
@@ -9,7 +9,9 @@ class ThreePointStudio_UsergroupRanks_Listener_Template {
 
 	public static function templateHook($hookName, &$contents, array $hookParams, XenForo_Template_Abstract $template) {
 		$options = XenForo_Application::get('options');
-		if ($hookName == "message_user_info_avatar" or $hookName == "message_user_info_text") {
+		switch ($hookName) {
+			case "message_user_info_avatar":
+			case "message_user_info_text":
 			if (!$options->get('3ps_usergroup_ranks_system_active')) { // Don't show usergroup ranks
 				return;
 			}
@@ -53,12 +55,18 @@ class ThreePointStudio_UsergroupRanks_Listener_Template {
 					break;
 			}
 			$contents = str_replace($search, $replace, $contents);
-		} elseif ($hookName == "footer") {
+			break;
+		case 'help_sidebar_links':
+			$linksTemplate = $template->create('3ps_usergroup_ranks_help_sidebar_links', $template->getParams())->render();
+			$contents = $contents . $linksTemplate;
+			break;
+		case "footer":
 			$creditNotice = ($options->get("3ps_usergroup_ranks_display_credit_notice")) ? new XenForo_Phrase("3ps_usergroup_ranks_credit_notice") : '';
 			$copyrightText = new XenForo_Phrase("xenforo_copyright");
 			$search = '<div id="copyright">' . $copyrightText;
 			$replace = '<div id="copyright">' . $copyrightText . '<br />' . '<div id="3ps_usergroup_ranks_credit_notice">' . $creditNotice . '<!-- This forum uses [3.studIo] Usergroup Ranks, licensed under the BSD 2-Clause Modified License. DO NOT REMOVE THIS NOTICE! --></div>';
 			$contents = str_replace($search, $replace, $contents);
+			break;
 		}
 	}
 

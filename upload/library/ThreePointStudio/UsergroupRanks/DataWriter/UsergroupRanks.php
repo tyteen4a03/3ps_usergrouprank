@@ -1,6 +1,6 @@
 <?php
 /*
-* Usergroup Ranks v1.5.6 written by tyteen4a03@3.studIo.
+* Usergroup Ranks v1.6.0 written by tyteen4a03@3.studIo.
 * This software is licensed under the BSD 2-Clause modified License.
 * See the LICENSE file within the package for details.
 */
@@ -8,7 +8,7 @@
 /*
 * Note on some values:
 * rank_type: Defines how the addon should treat the content in rank_content
-* 0 - image (default), 1 - text
+* 0 - image (default), 1 - text, 2 - CSS Sprite
 */
 
 class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_DataWriter {
@@ -39,6 +39,10 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_
 			'rank_styling_class' => array(
 				'type' => self::TYPE_STRING,
 				'default' => ''
+			),
+			'rank_sprite_params' => array(
+				'type' => self::TYPE_SERIALIZED,
+				'default' => ''
 			)
 		)
 	);
@@ -63,10 +67,6 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_
 		return 'rid = ' . $this->_db->quote($this->getExisting('rid'));
 	}
 
-	protected function _getUsergroupRanksModel() {
-		return $this->getModelFromCache('ThreePointStudio_UsergroupRanks_Model_UsergroupRanks');
-	}
-
 	protected function _verifyCriteria(&$criteria) {
 		$criteriaFiltered = XenForo_Helper_Criteria::prepareCriteriaForSave($criteria);
 		$criteria = serialize($criteriaFiltered);
@@ -75,9 +75,13 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_
 
 	protected function _postSave() {
 		if (XenForo_Application::get("options")->get("3ps_usergroup_ranks_caching_level") > 0) {
-			$this->_getUsergroupRanksModel()->rebuildRankDefinitionCache();
+			$model = $this->_getUsergroupRanksModel();
+			$model->rebuildRankDefinitionCache();
+			$model->rebuildRankCSSDefinitionCache();
 		}
 	}
 
-
+	protected function _getUsergroupRanksModel() {
+		return $this->getModelFromCache('ThreePointStudio_UsergroupRanks_Model_UsergroupRanks');
+	}
 }
