@@ -7,6 +7,9 @@
 
 class ThreePointStudio_UsergroupRanks_ControllerPublic_Help extends XFCP_ThreePointStudio_UsergroupRanks_ControllerPublic_Help {
 	public function actionUsergroupRanks() {
+		if (!XenForo_Application::get("options")->get("3ps_usergroup_ranks_enable_ugr_listing")) {
+			throw $this->responseException($this->responseError(new XenForo_Phrase('requested_page_not_found'), 404));
+		}
 		$viewParams = array(
 			"userGroupRanks" => $this->getModelFromCache("ThreePointStudio_UsergroupRanks_Model_UsergroupRanks")->getAllUsergroupRanks()
 		);
