@@ -22,7 +22,7 @@ class ThreePointStudio_UsergroupRanks_Helpers {
 	public static function helperRenderRank($rank, $returnTag = "li", $ignoreCache = false) {
 		$dr = self::_getModelFromCache("XenForo_Model_DataRegistry");
 		$cachingOption = XenForo_Application::getConfig()->get("3ps_usergroup_ranks_caching_level");
-		$class = $style = $content = '';
+		$class = $style = $content = $rankSpriteClass = '';
 		switch ($rank["rank_type"]) {
 			case 0:
 				// Image
@@ -37,7 +37,7 @@ class ThreePointStudio_UsergroupRanks_Helpers {
 				$spriteParams = unserialize($rank["rank_sprite_params"]);
 				// Do we want to generate the style properties?
 				if ($spriteParams["use_style"] or $ignoreCache) {
-					$style = sprintf("background:url('%s') no-repeat top left;background-position:%dpx %dpx;width:%dpx;height:%dpx;", $rank["rank_content"], $spriteParams["x"], $spriteParams["y"], $spriteParams["w"], $spriteParams["h"]);
+					$style = sprintf("background:url('%s') no-repeat top left;background-position:%dpx %dpx;width:%dpx;height:%dpx;display:inline-block;", $rank["rank_content"], $spriteParams["x"], $spriteParams["y"], $spriteParams["w"], $spriteParams["h"]);
 				} else {
 					// Fetch them from DataRegistry and reference it instead
 					if ($rank["_useCSSSpriteSheetId"]) { // Are we given this key (from processRanks)?
@@ -52,13 +52,9 @@ class ThreePointStudio_UsergroupRanks_Helpers {
 		}
 		$finalStyle = ($style) ? sprintf(' style="%s"', $style) : "";
 		// Any class to apply?
-		$class = ($rank["rank_styling_class"] or $rankSpriteClass) ? sprintf(' class="%s %s"', $rankSpriteClass, $rank["rank_styling_class"]) : '';
+		$class = (!empty($rank["rank_styling_class"]) or !empty($rankSpriteClass)) ? (' class="' . $rankSpriteClass . ' ' . $rank["rank_styling_class"] . '"') : '';
 		// Assemble time!
 		return '<' . $returnTag . $class . $finalStyle . '>' . $content . '</' . $returnTag . '>';
-	}
-
-	public static function _intvalItems(&$item, $key) {
-		$item = intval($item);
 	}
 
 	/**

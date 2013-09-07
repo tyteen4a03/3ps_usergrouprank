@@ -18,7 +18,7 @@ class ThreePointStudio_UsergroupRanks_Installer {
 					  `rank_content` TEXT COLLATE utf8_unicode_ci NOT NULL,
 					  `rank_user_criteria` MEDIUMBLOB NOT NULL,
 					  `rank_styling_class` TEXT NOT NULL,
-					  `rank_sprite_params` TEXT NOT NULL,
+					  `rank_sprite_params` MEDIUMBLOB NOT NULL,
 					  UNIQUE KEY `rid` (`rid`)
 					) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;');
 		}
@@ -30,7 +30,9 @@ class ThreePointStudio_UsergroupRanks_Installer {
 							ADD COLUMN `rank_styling_class` TEXT NOT NULL AFTER `rank_user_criteria`;');
 			}
 			if ($version < 3) { // 1.5.5 to 1.6.0
-				$db->query('ALTER TABLE  `3ps_usergroup_ranks` CHANGE `rank_styling_class` `rank_styling_class` TEXT NOT NULL, ADD `rank_sprite_params` TEXT NOT NULL');
+				$db->query('ALTER TABLE `3ps_usergroup_ranks` CHANGE `rank_styling_class` `rank_styling_class` TEXT NOT NULL,
+							ADD `rank_sprite_params` MEDIUMBLOB NOT NULL, ADD `rank_description` TEXT NOT NULL DEFAULT \'\' AFTER `rank_active`
+							ADD `rank_disabled_from_listing` BOOLEAN NOT NULL DEFAULT  \'0\'');
 				//$model->invalidateCache(3);
 			}
 			// All upgrades require a cache invalidation

@@ -20,8 +20,8 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 		$displayUg = $user['display_style_group_id'];
 		$secondaryUgs = explode(",", $user["secondary_group_ids"]);
 		$secUgsCount = count($secondaryUgs);
-		// Walk to make sure everything is int
-		array_walk($secondaryUgs, "ThreePointStudio_UsergroupRanks_Helpers::_intvalItems");
+		// Make sure everything is int
+		$secondaryUgs = array_map("intval", $secondaryUgs);
 		$allUgs = array_merge((array)$primaryUg, $secondaryUgs);
 
 		// Set up the required environment information
@@ -37,13 +37,12 @@ class ThreePointStudio_UsergroupRanks_Listener_Criteria {
 			case '3ps_usergroup_ranks_is_not_in_secondary_ug_all':
 			case '3ps_usergroup_ranks_is_in_ugs_all':
 			case '3ps_usergroup_ranks_is_not_in_ugs_all':
-				$dataUgs = $data['user_group_ids'];
-				array_walk($dataUgs, "ThreePointStudio_UsergroupRanks_Helpers::_intvalItems");
+				$dataUgs = array_map("intval", $data['user_group_ids']);
 				break;
 			case '3ps_usergroup_ranks_allugs_dsp_lower':
 			case '3ps_usergroup_ranks_allugs_dsp_higher':
-			case '3ps_usergroup_ranks_displayug_dsp_lower':
 			case '3ps_usergroup_ranks_displayug_dsp_higher':
+			case '3ps_usergroup_ranks_displayug_dsp_lower':
 			case '3ps_usergroup_ranks_secugs_dsp_lower_any':
 			case '3ps_usergroup_ranks_secugs_dsp_higher_any':
 			case '3ps_usergroup_ranks_secugs_dsp_lower_all':

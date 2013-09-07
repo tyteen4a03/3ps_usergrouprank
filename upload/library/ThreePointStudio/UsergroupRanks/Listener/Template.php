@@ -5,6 +5,13 @@
 * See the LICENSE file within the package for details.
 */
 
+/*
+0=Over Avatar
+1=Under Avatar
+2=Above Username
+3=Under UserTitle
+*/
+
 class ThreePointStudio_UsergroupRanks_Listener_Template {
 
 	public static function templateHook($hookName, &$contents, array $hookParams, XenForo_Template_Abstract $template) {
@@ -22,6 +29,7 @@ class ThreePointStudio_UsergroupRanks_Listener_Template {
 					or $hookName == "message_user_info_text" and !in_array($displayOptions["display_position"]["posts"], array(2, 3))) {
 					return;
 				}
+
 				// Hack to reshuffle the array values
 				$ugrList = array_values(XenForo_Model::create("ThreePointStudio_UsergroupRanks_Model_UsergroupRanks")->buildUserGroupRanksListForUser($hookParams["user"]));
 				// Determine padding location
@@ -39,32 +47,37 @@ class ThreePointStudio_UsergroupRanks_Listener_Template {
 					'posPad' => $posPad,
 				);
 				$ugrHtml = "";
-				if ($maxItems["style"]["posts"] == 0 and $maxItems["value"]["posts"] > 1) { // Fixed - need 
+				if ($maxItems["style"]["posts"] == 0 and $maxItems["value"]["posts"] > 1) { // Fixed - need raw template
 					// EXPERIMENTAL
 					$rankTemplate = $template->create("3ps_usergroup_ranks_displaybit_raw", $template->getParams());
-					$totalRanks = count($ugrList);
 					$tempRankHtml = "";
-					for ($i = 0; $i < $totalRanks; $i++) {
-						if ($i % $maxItems["values"]["posts"] == 0) {
+					$i = 1;
+					foreach ($ugrList as $ugr) {
+						$tempRankHtml .= ThreePointStudio_UsergroupRanks_Helpers::helperRenderRank($ugr);
+						if ($i % $maxItems["value"]["posts"] == 0) {
 							// New row
 							$rankTemplate->setParam("userGroupRanks", $tempRankHtml);
 							$rankTemplate->setParams($rt_baseViewParams);
 							$ugrHtml .= $rankTemplate->render();
-							$tempRankHtml = ""; // Clear the previous data
+							// Clear the previous data
+							$tempRankHtml = "";
+							$rankTemplate = $template->create("3ps_usergroup_ranks_displaybit_raw", $template->getParams());
 						}
-						$tempRankHtml .= ThreePointStudio_UsergroupRanks_Helpers::helperRenderRank($ugrList[$i]);
-						if (($i % $maxItems["values"]["posts"]) == ($maxItems["values"]["posts"] - 1) || ($i + 1) == $maxItems["values"]["posts"]) {
-							// If there is a remainder of 1 or if there is nothing left in our result set, end the row
-							$rankTemplate->setParam("userGroupRanks", $tempRankHtml);
-							$rankTemplate->setParams($rt_baseViewParams);
-							$ugrHtml .= $rankTemplate->render();
-							unset($tempRankHtml); // Clear the previous data, just in case
+						if ($i > 1) {
+							$postPad = "Mid";
 						}
+						$i++;
 					}
+					$rankTemplate->setParam("userGroupRanks", $tempRankHtml);
+					$rankTemplate->setParams($rt_baseViewParams);
+					$ugrHtml .= $rankTemplate->render();
 				} else {
 					$rankTemplate = $template->create("3ps_usergroup_ranks_displaybit", $template->getParams());
 					$rankTemplate->setParam("userGroupRanks", $ugrList);
-					if ($maxItems["style"]["posts"] == 1) $rankTemplate->setParam("extraCSSClasses", " dynamicUgrContainer"); // Dynamic
+					if ($maxItems["style"]["posts"] == 1) {
+						$rankTemplate->setParam("extraStyleProp", "width: " . $maxItems["value"]["posts"] . "px; overflow: visible"); // Dynamic
+						$rankTemplate->setParam("extraCSSClasses", "paddedLi"); // Dynamic
+					}
 					$rankTemplate->setParams($rt_baseViewParams);
 					$ugrHtml = $rankTemplate->render();
 				}

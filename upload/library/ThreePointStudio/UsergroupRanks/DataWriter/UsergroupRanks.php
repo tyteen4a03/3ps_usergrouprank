@@ -27,6 +27,10 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_
 				'type' => self::TYPE_BOOLEAN,
 				'default' => 1
 			),
+			/*"rank_description" => array(
+				'type' => self::TYPE_STRING,
+				'default' => ""
+			),*/
 			"rank_content" => array(
 				'type' => self::TYPE_STRING,
 				'default' => ''
@@ -43,7 +47,11 @@ class ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks extends XenForo_
 			'rank_sprite_params' => array(
 				'type' => self::TYPE_SERIALIZED,
 				'default' => ''
-			)
+			),
+			/*'rank_disabled_from_listing' => array(
+				'type' => self::TYPE_BOOLEAN,
+				'default' => 0
+			)*/
 		)
 	);
 

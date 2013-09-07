@@ -9,8 +9,8 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	/**
 	* Gets all usergroup ranks.
 	*
-	* @return	array	Format: [user group id] => info
-	*/
+	* @return array Format: [user group id] => info
+	 */
 	public function getAllUserGroupRanks() {
 		return $this->fetchAllKeyed('SELECT * FROM 3ps_usergroup_ranks ORDER BY rid', 'rid');
 	}
@@ -30,7 +30,7 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	* @param array $userGroupId
 	*
 	* @return array Format: [user group id] => info
-	*/
+	 */
 	public function getUsergroupRankById($userGroupId) {
 		return $this->_getDb()->fetchRow('SELECT * FROM 3ps_usergroup_ranks WHERE rid = ?', $userGroupId);
 	}
@@ -41,7 +41,7 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	* @param array $input 1D array with row content.
 	*
 	* @return int	Usergroup Rank ID
-	*/
+	 */
 	public function insertOrUpdateUserGroupRank($input) {
 		$dw = XenForo_DataWriter::create('ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks');
 		if ($input['rid'] and $input['rid'] > 0) {
@@ -135,6 +135,7 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	 *
 	 * @param $ugrList The usergroup ranks list
 	 * @param $user An user array.
+	 *
 	 * @return array The processed usergroup ranks list
 	 */
 	public function processRanks($ugrList, $user) {
@@ -182,7 +183,7 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	}
 
 	/**
-	 *  Fetches the usergroup rank definition from cache, or from the database.
+	 * Fetches the usergroup rank definition from cache, or from the database.
 	 *
 	 * @return array|null All usergroup ranks.
 	 */
@@ -205,6 +206,7 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	 * @param $ugrList
 	 * @param $user An user array.
 	 * @param bool $ignoreCache Whether the DataRegistry entry should be ignored. Used for cache rebuilding.
+	 *
 	 * @return array The usergroup ranks list applicable to the user.
 	 */
 	public function buildUserRankAssociation($ugrList, $user, $ignoreCache = false) {
@@ -227,9 +229,10 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 	}
 
 	/**
-	 *  Builds usergroup rank list using an $user array. Entry point for display uses.
+	 * Builds usergroup rank list using an $user array. Entry point for display uses.
 	 *
 	 * @param $user The user array
+	 *
 	 * @return array Usergroup ranks to use
 	 */
 	public function buildUserGroupRanksListForUser($user) {
@@ -242,5 +245,85 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 			$userGroupRanks = $this->processRanks($userGroupRanks, $user);
 		}
 		return $userGroupRanks;
+	}
+
+	/**
+	 * Given Usergroup Ranks list, assemble an array of [ugr id] => array(usergroup ids), 
+	 * regardless of where it's from.
+	 *
+	 * @param $ugrList The Usergroup Ranks list array
+	 *
+	 * @return array [ugr id] => array(usergroup ids)
+	 */
+	public static function getUsergrougRankRelationsList($ugrList) {
+		$ugrAssoc = array();
+		foreach ($ugrList as $key => $ugr) {
+			$ugrAssoc[$key] = self::getUsergroupRankRelation($ugr);
+		}
+		return $ugrAssoc;
+	}
+
+	/**
+	 * Given Usergroup Ranks list, return an array of usergroup ids, 
+	 * regardless of where it's from.
+	 *
+	 * @param $ugr The Usergroup Rank array
+	 *
+	 * @return array The usergroup relations.
+	 */
+	public static function getUsergroupRankRelation($ugr) {
+		$rankCond = unserialize($ugr["rank_user_criteria"]);
+		$ugrAssoc = array();
+		foreach ($rankCond as $rule) {
+			if (empty($rule["data"]["user_group_ids"])) {
+				continue; // Somehow they checked the condition without selecting
+			}
+			switch ($rule["rule"]) { // How I love copying and pasting :P
+				case 'user_groups':
+				case 'not_user_groups':
+				case '3ps_usergroup_ranks_is_primary_ug':
+				case '3ps_usergroup_ranks_is_display_ug':
+				case '3ps_usergroup_ranks_is_in_secondary_ug_any':
+				case '3ps_usergroup_ranks_is_in_secondary_ug_all':
+				case '3ps_usergroup_ranks_is_in_ugs_all':
+					// Add to array
+					$ugrAssoc = array_merge($rule["data"]["user_group_ids"], $ugrAssoc);
+					break;
+			}
+		}
+		return array_unique(array_map("intval", $ugrAssoc));
+	}
+
+	/**
+	 * Imports Usergroup Ranks according to the XML document given.
+	 *
+	 * @param SimpleXMLElement $xml
+	 */
+	public function importRanksXml(SimpleXMLElement $xml) {
+		if ($xml->getName() != 'ugr') {
+			throw new XenForo_Exception(new XenForo_Phrase('3ps_usergroup_ranks_provided_file_is_not_an_usergroup_ranks_xml_file'), true);
+		}
+		$ranks = XenForo_Helper_DevelopmentXml::fixPhpBug50670($xml->ugr);
+
+		foreach ($ranks as $rank) {
+			$dw = XenForo_DataWriter::create('ThreePointStudio_UsergroupRanks_DataWriter_UsergroupRanks');
+			$dw->bulkSet(array(
+				"rank_type" => (int)$rank["type"],
+			));
+		}
+	}
+
+	/**
+	 * Writes out export XML. Returns XML string.
+	 *
+	 * @param array $ranks An array of Usergroup Ranks
+	 *
+	 * @return DOMDocument
+	 */
+	public function getRanksExportXml(array $ranks) {
+		$document = new DOMDocument('1.0', 'utf-8');
+		$document->formatOutput = true;
+
+		$rootNode = $document->createElement('ugr');
 	}
 }

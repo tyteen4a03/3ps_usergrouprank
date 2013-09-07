@@ -9,6 +9,10 @@
     <template title="3ps_usergroup_ranks_admin.css"><![CDATA[.underlineBold {
 	text-decoration: underline;
 	font-weight: bold;
+}
+
+.boldText {
+	font-weight: bold;	
 }]]></template>
     <template title="3ps_usergroup_ranks_delete"><![CDATA[<xen:title>{xen:phrase 3ps_usergroup_ranks_confirm_deletion_of_usergroup_rank}: {xen:phrase 3ps_usergroup_ranks_rank_id} {$userGroupRankId}</xen:title>
 <xen:h1>{xen:phrase 3ps_usergroup_ranks_confirm_deletion_of_usergroup_rank}</xen:h1>
@@ -28,6 +32,35 @@
 	<input type="hidden" name="rid" value="{$userGroupRankId}" />
 	<input type="hidden" name="_xfConfirm" value="1" />
 </xen:form>]]></template>
+    <template title="3ps_usergroup_ranks_display_positions_option"><![CDATA[<xen:require css="3ps_usergroup_ranks_admin.css" />
+
+<xen:checkboxunit label="{$preparedOption.title}" name="{$fieldPrefix}[{$preparedOption.option_id}]" hint="{$preparedOption.hint}">
+	<xen:option name="{$fieldPrefix}[{$preparedOption.option_id}][display][posts]" label="{xen:phrase 3ps_usergroup_ranks_in_posts}" selected="{$preparedOption.option_value.display.posts}">
+		<xen:select name="{$fieldPrefix}[{$preparedOption.option_id}][display_position][posts]" value="{$preparedOption.option_value.display_position.posts}">
+			<xen:option value="0">{xen:phrase 3ps_usergroup_ranks_over_avatar}</xen:option>
+			<xen:option value="1">{xen:phrase 3ps_usergroup_ranks_under_avatar}</xen:option>
+			<xen:option value="2">{xen:phrase 3ps_usergroup_ranks_above_username}</xen:option>
+			<xen:option value="3">{xen:phrase 3ps_usergroup_ranks_under_user_title}</xen:option>
+		</xen:select>
+	</xen:option>
+	<xen:option name="{$fieldPrefix}[{$preparedOption.option_id}][display][member_list]" label="{xen:phrase 3ps_usergroup_ranks_in_member_list}" selected="{$preparedOption.option_value.display.member_list}">
+		<xen:select name="{$fieldPrefix}[{$preparedOption.option_id}][display_position][member_list]" value="{$preparedOption.option_value.display_position.member_list}">
+			<xen:option value="0">{xen:phrase 3ps_usergroup_ranks_under_username}</xen:option>
+			<xen:option value="1">{xen:phrase 3ps_usergroup_ranks_on_the_right}</xen:option>
+		</xen:select>
+	</xen:option>
+	<xen:option name="{$fieldPrefix}[{$preparedOption.option_id}][display][member_cards]" label="{xen:phrase 3ps_usergroup_ranks_on_member_cards}" selected="{$preparedOption.option_value.display.member_cards}">
+		<xen:select name="{$fieldPrefix}[{$preparedOption.option_id}][display_position][member_cards]" value="{$preparedOption.option_value.display_position.member_cards}">
+			<xen:option value="0">{xen:phrase 3ps_usergroup_ranks_under_username}</xen:option>
+			<xen:option value="1">{xen:phrase 3ps_usergroup_ranks_under_user_title}</xen:option>
+		</xen:select>
+	</xen:option>
+	<xen:explain>{xen:raw $preparedOption.explain}</xen:explain>
+	<xen:html>
+		<input type="hidden" name="{$listedFieldName}" value="{$preparedOption.option_id}" />
+		{xen:raw $editLink}
+	</xen:html>
+</xen:checkboxunit>]]></template>
     <template title="3ps_usergroup_ranks_edit"><![CDATA[<xen:title>{xen:if '{$userGroupRank.rid}', '{xen:phrase 3ps_usergroup_ranks_edit_usergroup_rank}: {xen:phrase 3ps_usergroup_ranks_rank_id} {$userGroupRank.rid}', '{xen:phrase 3ps_usergroup_ranks_create_usergroup_rank}'}</xen:title>
 
 <xen:form class="AutoValidator" action="{xen:adminlink '3ps-usergroup-ranks/save', $userGroupRank}" data-redirect="on">
@@ -46,11 +79,24 @@
 			<xen:selectunit name="rank_type" label="{xen:phrase 3ps_usergroup_ranks_rank_type}" value="{$userGroupRank.rank_type}">
 				<xen:option value="0" selected="{$userGroupRank.rank_type} == 0">{xen:phrase image}</xen:option>
 				<xen:option value="1" selected="{$userGroupRank.rank_type} == 1">{xen:phrase text}</xen:option>
+				<xen:option value="2" selected="{$userGroupRank.rank_type} == 2">{xen:phrase 3ps_usergroup_ranks_css_sprite}</xen:option>
 				<xen:explain>{xen:phrase 3ps_usergroup_ranks_rank_type_explain}</xen:explain>
 			</xen:selectunit>
 			<xen:textboxunit label="{xen:phrase 3ps_usergroup_ranks_rank_content}:" name="rank_content" value="{$userGroupRank.rank_content}">
 				<xen:explain>{xen:phrase you_may_use_html}</xen:explain>
 			</xen:textboxunit>
+			
+			<xen:comment>
+			<xen:textboxunit name="rank_description" label="{xen:phrase description}" value="{$userGroupRank.rank_description}" rows="3">
+				<xen:explain>{xen:phrase 3ps_usergroup_ranks_rank_description_explain}</xen:explain>
+			</xen:textboxunit>
+			<xen:checkboxunit label="">
+				<xen:option name="rank_disabled_from_listing" label="{xen:phrase 3ps_usergroup_ranks_rank_is_disabled_from_listing}" selected="{$userGroupRank.rank_disabled_from_listing}">
+					<xen:hint>{xen:phrase 3ps_usergroup_ranks_rank_disabled_from_listing_explain}</xen:hint>
+				</xen:option>
+			</xen:checkboxunit>
+			</xen:comment>
+			
 			<xen:if is="!{$userGroupRank.rid}">
 				<input type="hidden" name="rid" value="0" />
 			</xen:if>
@@ -62,11 +108,28 @@
 			<xen:textboxunit label="{xen:phrase 3ps_usergroup_ranks_rank_styling_class}:" name="rank_styling_class" value="{$userGroupRank.rank_styling_class}">
 				<xen:explain>{xen:phrase 3ps_usergroup_ranks_rank_styling_class_explain}</xen:explain>
 			</xen:textboxunit>
+
+			<h3 class="sectionHeader">{xen:phrase 3ps_usergroup_ranks_css_sprite_settings}</h3>
+			<xen:controlunit label="{xen:phrase sprite_dimensions}:">
+				<xen:spinbox name="rank_sprite_params[w]" value="{$userGroupRank.rank_sprite_params.w}" min="1" title="{xen:phrase width}" inputclass="Tooltip OptOut" />
+				<xen:spinbox name="rank_sprite_params[h]" value="{$userGroupRank.rank_sprite_params.h}" min="1" title="{xen:phrase height}" inputclass="Tooltip OptOut" />
+				px
+			</xen:controlunit>
+		
+			<xen:controlunit label="{xen:phrase sprite_position}:">
+				<xen:spinbox name="rank_sprite_params[x]" value="{$userGroupRank.rank_sprite_params.x}" title="{xen:phrase background_position_x}" inputclass="Tooltip OptOut" />
+				<xen:spinbox name="rank_sprite_params[y]" value="{$userGroupRank.rank_sprite_params.y}" title="{xen:phrase background_position_y}" inputclass="Tooltip OptOut" />
+				px
+			</xen:controlunit>
+			<xen:checkboxunit label="">
+				<xen:option name="rank_sprite_params[use_style]" label="{xen:phrase 3ps_usergroup_ranks_use_style_attr_for_render}" selected="{$userGroupRank.rank_sprite_params.use_style}">
+					<xen:hint>{xen:phrase 3ps_usergroup_ranks_use_style_attr_for_render_explain}</xen:hint>
+				</xen:option>
+			</xen:checkboxunit>
 		</li>
 	</ul>
 
 	<xen:submitunit save="{xen:phrase 3ps_usergroup_ranks_save_usergroup_rank}"></xen:submitunit>
-	<xen:controlunit label="{xen:phrase note}:">{xen:phrase 3ps_usergroup_ranks_no_criteria_warning}</xen:controlunit>
 </xen:form>]]></template>
     <template title="3ps_usergroup_ranks_list"><![CDATA[<xen:title>{xen:phrase 3ps_usergroup_ranks_usergroup_ranks_list}</xen:title>
 
@@ -89,11 +152,89 @@
 		label="{xen:raw $userGroupRank.content_render}"
 		snippet="{xen:phrase 3ps_usergroup_ranks_rank_id}: {$userGroupRank.rid}"
 		href="{xen:adminlink '3ps-usergroup-ranks/edit', $userGroupRank}"
-		delete="{xen:adminlink '3ps-usergroup-ranks/delete', $userGroupRank}" />
+		delete="{xen:adminlink '3ps-usergroup-ranks/delete', $userGroupRank}">
+			<xen:html><label class="secondaryContent"><input type="checkbox" name="3ps_ugr_rids[]" value="{$userGroupRank.rid}" /></label></xen:html>
+		</xen:listitem>
 	</xen:foreach>
 </ol>
 
 <p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $userGroupRanks}</span>', 'total={xen:count $userGroupRanks}'}</p>]]></template>
+    <template title="3ps_usergroup_ranks_max_items_per_row_option"><![CDATA[<xen:require css="3ps_usergroup_ranks_admin.css" />
+<dl class="ctrlUnit">
+    <!-- Edit option link. Must be put either at the beginning or the end of the dl tag. -->
+    <input type="hidden" name="{$listedFieldName}" value="{$preparedOption.option_id}" />
+    <!-- End Edit option link -->
+    {xen:raw $editLink}
+    <dt>{$preparedOption.title}</dt>
+    <dd>
+        <ul>
+            <li>
+                <label class="boldText">{xen:phrase 3ps_usergroup_ranks_in_posts}:</label>
+                <ul>
+                    <li>
+                        <label for="{$fieldPrefix}[{$preparedOption.option_id}][style][posts]">{xen:phrase 3ps_usergroup_ranks_calculation_style}</label>
+                        <xen:radio name="{$fieldPrefix}[{$preparedOption.option_id}][style][posts]">
+                            <xen:option value="0" selected="{$preparedOption.option_value.style.posts} == 0">{xen:phrase 3ps_usergroup_ranks_fixed}</xen:option>
+                            <xen:option value="1" selected="{$preparedOption.option_value.style.posts} == 1">{xen:phrase 3ps_usergroup_ranks_dynamic}</xen:option>
+                        </xen:radio>
+                    </li>
+                    <li>
+                        <label for="{$fieldPrefix}[{$preparedOption.option_id}][value][posts]">{xen:phrase 3ps_usergroup_ranks_value}</label>
+                        <ul>
+                            <li>
+                                <xen:spinbox name="{$fieldPrefix}[{$preparedOption.option_id}][value][posts]" value="{$preparedOption.option_value.value.posts}" min="0" />
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <ul>
+            <li>
+                <label class="boldText">{xen:phrase 3ps_usergroup_ranks_in_member_list}:</label>
+                <ul>
+                    <li>
+                        <label for="{$fieldPrefix}[{$preparedOption.option_id}][style][member_list]">{xen:phrase 3ps_usergroup_ranks_calculation_style}</label>
+                        <xen:radio name="{$fieldPrefix}[{$preparedOption.option_id}][style][member_list]" selected="{$preparedOption.option_value.style.member_list}">
+                            <xen:option value="0" selected="{$preparedOption.option_value.style.member_list} == 0">{xen:phrase 3ps_usergroup_ranks_fixed}</xen:option>
+                            <xen:option value="1" selected="{$preparedOption.option_value.style.member_list} == 1">{xen:phrase 3ps_usergroup_ranks_dynamic}</xen:option>
+                        </xen:radio>
+                    </li>
+                    <li>
+                        <label for="{$fieldPrefix}[{$preparedOption.option_id}][value][member_list]">{xen:phrase 3ps_usergroup_ranks_value}</label>
+                        <ul>
+                            <li>
+                                <xen:spinbox name="{$fieldPrefix}[{$preparedOption.option_id}][value][member_list]" value="{$preparedOption.option_value.value.member_list}" min="0" />
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <ul>
+            <li>
+                <label class="boldText">{xen:phrase 3ps_usergroup_ranks_on_member_cards}:</label>
+                <ul>
+                    <li>
+                        <label for="{$fieldPrefix}[{$preparedOption.option_id}][style][member_cards]">{xen:phrase 3ps_usergroup_ranks_calculation_style}</label>
+                        <xen:radio name="{$fieldPrefix}[{$preparedOption.option_id}][style][member_cards]" selected="{$preparedOption.option_value.style.member_cards}">
+                            <xen:option value="0" selected="{$preparedOption.option_value.style.member_cards} == 0">{xen:phrase 3ps_usergroup_ranks_fixed}</xen:option>
+                            <xen:option value="1" selected="{$preparedOption.option_value.style.member_cards} == 1">{xen:phrase 3ps_usergroup_ranks_dynamic}</xen:option>
+                        </xen:radio>
+                    </li>
+                    <li>
+                        <label for="{$fieldPrefix}[{$preparedOption.option_id}][value][member_cards]">{xen:phrase 3ps_usergroup_ranks_value}</label>
+                        <ul>
+                            <li>
+                                <xen:spinbox name="{$fieldPrefix}[{$preparedOption.option_id}][value][member_cards]" value="{$preparedOption.option_value.value.member_cards}" min="0" />
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </dd>
+</dl>]]></template>
     <template title="3ps_usergroup_ranks_tools_rebuild"><![CDATA[<xen:form action="{xen:adminlink 'tools/cache-rebuild'}">
     <h2 class="subHeading">{xen:phrase 3ps_usergroup_ranks_rebuild_user_rank_association}</h2>
     <xen:spinboxunit name="options[batch]" value="250" step="50" min="1" label="{xen:phrase items_to_process_per_page}:" />
@@ -113,7 +254,7 @@
 	<ul>
 		<!-- slot: user_groups -->	
 		<li><label>
-			<input type="checkbox" name="rank_user_criteria[user_groups][rule]" value="user_groups" class="Disabler" id="ucrit_user_groups" {xen:checked $userCriteria.user_groups} />
+			<input type="checkbox" name="rank_user_criteria[user_groups][rule]" value="user_groups" class="Disabler" id="ucrit_user_groups" {xen:checked $userCriteria.user_groups}  />
 			{xen:phrase user_is_member_of_any_of_selected_user_groups}:</label>
 			<div class="criteriaQualifier" id="ucrit_user_groups_Disabler">
 				<xen:select name="rank_user_criteria[user_groups][data][user_group_ids]" size="4" multiple="true">
@@ -197,6 +338,7 @@
 			</div>
 		</li>
 		<!-- slot: 3ps_usergroup_ranks_is_not_in_secondary_ug_any -->
+		<xen:if is="!({$versionDD} == '12)'">
 		<li><label>
 			<input type="checkbox" name="rank_user_criteria[3ps_usergroup_ranks_is_not_in_secondary_ug_any][rule]" value="3ps_usergroup_ranks_is_not_in_secondary_ug_any" class="Disabler" id="ucrit_3ps_usergroup_ranks_is_not_in_secondary_ug_any" {xen:checked $userCriteria.3ps_usergroup_ranks_is_not_in_secondary_ug_any} />
 			{xen:phrase 3ps_usergroup_ranks_is_not_in_secondary_ug_any_explain}:</label>
@@ -208,6 +350,7 @@
 				</xen:select> 
 			</div>
 		</li>
+		</xen:if>
 		<!-- slot: 3ps_usergroup_ranks_is_in_secondary_ug_all -->
 		<li><label>
 			<input type="checkbox" name="rank_user_criteria[3ps_usergroup_ranks_is_in_secondary_ug_all][rule]" value="3ps_usergroup_ranks_is_in_secondary_ug_all" class="Disabler" id="ucrit_3ps_usergroup_ranks_is_in_secondary_ug_all" {xen:checked $userCriteria.3ps_usergroup_ranks_is_in_secondary_ug_all} />
@@ -357,6 +500,7 @@
   <code_event_listeners>
     <listener event_id="criteria_user" execute_order="10" callback_class="ThreePointStudio_UsergroupRanks_Listener_Criteria" callback_method="criteriaUser" active="1" description="Display Style Priority Criterias"/>
     <listener event_id="init_dependencies" execute_order="10" callback_class="ThreePointStudio_UsergroupRanks_Listener_Init" callback_method="initDependencies" active="1" description="DSP Cache, extending cacheRebuilder"/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="ThreePointStudio_UsergroupRanks_Listener_Controller" callback_method="loadClassController" active="1" description=""/>
     <listener event_id="load_class_datawriter" execute_order="10" callback_class="ThreePointStudio_UsergroupRanks_Listener_DataWriter" callback_method="loadClassDataWriter" active="1" description="Override usergroup DW"/>
     <listener event_id="load_class_importer" execute_order="10" callback_class="ThreePointStudio_UsergroupRanks_Listener_Importer" callback_method="loadClassImporter" active="1" description="Load importers"/>
     <listener event_id="template_create" execute_order="10" callback_class="ThreePointStudio_UsergroupRanks_Listener_Template" callback_method="templateCreate" active="1" description="Preload templates"/>
@@ -379,16 +523,27 @@
       <default_value>1</default_value>
       <edit_format_params></edit_format_params>
       <sub_options></sub_options>
-      <relation group_id="3ps_usergroup_ranks" display_order="10"/>
+      <relation group_id="3ps_usergroup_ranks" display_order="1000"/>
     </option>
-    <option option_id="3ps_usergroup_ranks_display_style" edit_format="select" data_type="unsigned_integer" can_backup="1">
-      <default_value>1</default_value>
-      <edit_format_params>0=Over Avatar
-1=Under Avatar
-2=Above Username
-3=Under UserTitle</edit_format_params>
+    <option option_id="3ps_usergroup_ranks_display_positions" edit_format="template" data_type="array" can_backup="1">
+      <default_value></default_value>
+      <edit_format_params>3ps_usergroup_ranks_display_positions_option</edit_format_params>
+      <sub_options>display
+display_position</sub_options>
+      <relation group_id="3ps_usergroup_ranks" display_order="100"/>
+    </option>
+    <option option_id="3ps_usergroup_ranks_enable_ugr_listing" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>0</default_value>
+      <edit_format_params></edit_format_params>
       <sub_options></sub_options>
-      <relation group_id="3ps_usergroup_ranks" display_order="2"/>
+      <relation group_id="3ps_usergroup_ranks" display_order="200"/>
+    </option>
+    <option option_id="3ps_usergroup_ranks_max_items_per_row" edit_format="template" data_type="array" can_backup="1">
+      <default_value></default_value>
+      <edit_format_params>3ps_usergroup_ranks_max_items_per_row_option</edit_format_params>
+      <sub_options>style
+value</sub_options>
+      <relation group_id="3ps_usergroup_ranks" display_order="101"/>
     </option>
     <option option_id="3ps_usergroup_ranks_system_active" edit_format="onoff" data_type="boolean" can_backup="1">
       <default_value>1</default_value>
@@ -396,19 +551,36 @@
       <sub_options></sub_options>
       <relation group_id="3ps_usergroup_ranks" display_order="1"/>
     </option>
+    <option option_id="3ps_usergroup_ranks_ugr_listing_display_options" edit_format="radio" data_type="integer" can_backup="1">
+      <default_value>0</default_value>
+      <edit_format_params>0=All available Usergroup Ranks
+1=Usergroup Ranks user has</edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="3ps_usergroup_ranks" display_order="201"/>
+    </option>
   </optiongroups>
   <permissions>
-    <permission_groups/>
-    <permissions/>
-    <interface_groups/>
+    <permission_groups>
+      <permission_group permission_group_id="3ps_ugr"/>
+    </permission_groups>
+    <permissions>
+      <permission permission_group_id="3ps_ugr" permission_id="canViewUGRListing" permission_type="flag" default_value="unset" interface_group_id="3ps_ugr" display_order="1"/>
+    </permissions>
+    <interface_groups>
+      <interface_group interface_group_id="3ps_ugr" display_order="1"/>
+    </interface_groups>
   </permissions>
   <phrases>
+    <phrase title="3ps_usergroup_ranks_above_username" version_id="3" version_string="1.5.6"><![CDATA[Above Username]]></phrase>
     <phrase title="3ps_usergroup_ranks_allugs_dsp_higher_explain" version_id="1" version_string="1.1.0"><![CDATA[<span class="underlineBold">All</span> of the user's user groups have a display style priority higher than]]></phrase>
     <phrase title="3ps_usergroup_ranks_allugs_dsp_lower_explain" version_id="1" version_string="1.1.0"><![CDATA[<span class="underlineBold">All</span> of the user's user groups have a display style priority lower than]]></phrase>
+    <phrase title="3ps_usergroup_ranks_calculation_style" version_id="3" version_string="1.5.6"><![CDATA[Calculation Style]]></phrase>
     <phrase title="3ps_usergroup_ranks_confirm_deletion_of_usergroup_rank" version_id="0" version_string="1.0.0"><![CDATA[Confirm Deletion of Usergroup Rank]]></phrase>
     <phrase title="3ps_usergroup_ranks_create_new_usergroup_rank" version_id="0" version_string="1.0.0"><![CDATA[Create New Usergroup Rank]]></phrase>
     <phrase title="3ps_usergroup_ranks_create_usergroup_rank" version_id="0" version_string="1.0.0"><![CDATA[Create Usergroup Rank]]></phrase>
     <phrase title="3ps_usergroup_ranks_credit_notice" version_id="1" version_string="1.1.0"><![CDATA[Usergroup Ranks powered by <a href="http://3pointstudio.com">3.studIo</a>. The forum owner is a good person!]]></phrase>
+    <phrase title="3ps_usergroup_ranks_css_sprite" version_id="3" version_string="1.5.6"><![CDATA[CSS Sprite]]></phrase>
+    <phrase title="3ps_usergroup_ranks_css_sprite_settings" version_id="3" version_string="1.5.6"><![CDATA[CSS Sprite Settings]]></phrase>
     <phrase title="3ps_usergroup_ranks_delete_rank_confirm" version_id="0" version_string="1.0.0"><![CDATA[Please confirm that you want to delete the following usergroup rank]]></phrase>
     <phrase title="3ps_usergroup_ranks_delete_usergroup_rank" version_id="0" version_string="1.0.0"><![CDATA[Delete Usergroup Rank]]></phrase>
     <phrase title="3ps_usergroup_ranks_displayug_dsp_higher_explain" version_id="1" version_string="1.1.0"><![CDATA[User's <span class="underlineBold">display</span> user group has a display style priority higher than]]></phrase>
@@ -416,7 +588,11 @@
     <phrase title="3ps_usergroup_ranks_display_ug_in_secondary_ugs_explain" version_id="1" version_string="1.1.0"><![CDATA[User's display user group is in the user's secondary usergroups]]></phrase>
     <phrase title="3ps_usergroup_ranks_display_ug_is_primary_ug_explain" version_id="1" version_string="1.1.0"><![CDATA[User's display user group is the user's primary usergroup]]></phrase>
     <phrase title="3ps_usergroup_ranks_display_usergroup_rank_if_user_or_usergroup" version_id="1" version_string="1.1.0"><![CDATA[Display Usergroup Rank if User or Usergroup...]]></phrase>
+    <phrase title="3ps_usergroup_ranks_dynamic" version_id="3" version_string="1.5.6"><![CDATA[Dynamic]]></phrase>
     <phrase title="3ps_usergroup_ranks_edit_usergroup_rank" version_id="0" version_string="1.0.0"><![CDATA[Edit Usergroup Rank]]></phrase>
+    <phrase title="3ps_usergroup_ranks_fixed" version_id="3" version_string="1.5.6"><![CDATA[Fixed]]></phrase>
+    <phrase title="3ps_usergroup_ranks_in_member_list" version_id="3" version_string="1.5.6"><![CDATA[In Member List]]></phrase>
+    <phrase title="3ps_usergroup_ranks_in_posts" version_id="3" version_string="1.5.6"><![CDATA[In posts]]></phrase>
     <phrase title="3ps_usergroup_ranks_is_display_ug_explain" version_id="1" version_string="1.1.0"><![CDATA[User's <span class="underlineBold">display</span> user group is in any of the selected user groups]]></phrase>
     <phrase title="3ps_usergroup_ranks_is_in_secondary_ug_all_explain" version_id="1" version_string="1.1.0"><![CDATA[<span class="underlineBold">All</span> of the user's <span class="underlineBold">secondary</span> user group are in any of the selected user groups]]></phrase>
     <phrase title="3ps_usergroup_ranks_is_in_secondary_ug_any_explain" version_id="1" version_string="1.1.0"><![CDATA[<span class="underlineBold">Any</span> of the user's <span class="underlineBold">secondary</span> user group are in any of the selected user groups]]></phrase>
@@ -425,13 +601,19 @@
     <phrase title="3ps_usergroup_ranks_is_not_in_secondary_ug_any_explain" version_id="1" version_string="1.1.0"><![CDATA[<span class="underlineBold">Any</span> of the user's <span class="underlineBold">secondary</span> user group are NOT in any of the selected user groups]]></phrase>
     <phrase title="3ps_usergroup_ranks_is_not_primary_ug_explain" version_id="1" version_string="1.1.0"><![CDATA[User's <span class="underlineBold">primary</span> user group is NOT in any of the selected user groups]]></phrase>
     <phrase title="3ps_usergroup_ranks_is_primary_ug_explain" version_id="1" version_string="1.1.0"><![CDATA[User's <span class="underlineBold">primary</span> user group is in any of the selected user groups]]></phrase>
-    <phrase title="3ps_usergroup_ranks_no_criteria_warning" version_id="2" version_string="1.5.0"><![CDATA[If no criteria is specified, the usergroup rank will always be displayed, regardless of usergroup.]]></phrase>
+    <phrase title="3ps_usergroup_ranks_on_member_cards" version_id="3" version_string="1.5.6"><![CDATA[On member cards]]></phrase>
+    <phrase title="3ps_usergroup_ranks_on_the_right" version_id="3" version_string="1.5.6"><![CDATA[On the right]]></phrase>
+    <phrase title="3ps_usergroup_ranks_over_avatar" version_id="3" version_string="1.5.6"><![CDATA[Over Avatar]]></phrase>
     <phrase title="3ps_usergroup_ranks_priug_dsp_higher_explain" version_id="1" version_string="1.1.0"><![CDATA[User's <span class="underlineBold">primary</span> user group has a display style priority higher than]]></phrase>
     <phrase title="3ps_usergroup_ranks_priug_dsp_lower_explain" version_id="1" version_string="1.1.0"><![CDATA[User's <span class="underlineBold">primary</span> user group has a display style priority lower than]]></phrase>
+    <phrase title="3ps_usergroup_ranks_provided_file_is_not_an_usergroup_ranks_xml_file" version_id="3" version_string="1.5.6"><![CDATA[The provided file is not an Usergroup Ranks XML file.]]></phrase>
     <phrase title="3ps_usergroup_ranks_rank_content" version_id="0" version_string="1.0.0"><![CDATA[Rank Content]]></phrase>
+    <phrase title="3ps_usergroup_ranks_rank_description_explain" version_id="3" version_string="1.5.6"><![CDATA[Enter a description for this user group rank. This will be shown on the User Group Ranks Listing page on the Help pages.]]></phrase>
+    <phrase title="3ps_usergroup_ranks_rank_disabled_from_listing_explain" version_id="3" version_string="1.5.6"><![CDATA[Select this to disallow users from seeing this Usergroup Rank in the Usergroup Ranks listing. User groups with permission "Can see all ranks" are not affected.]]></phrase>
     <phrase title="3ps_usergroup_ranks_rank_display_condition" version_id="0" version_string="1.0.0"><![CDATA[Rank Display Condition]]></phrase>
     <phrase title="3ps_usergroup_ranks_rank_id" version_id="0" version_string="1.0.0"><![CDATA[Rank ID]]></phrase>
     <phrase title="3ps_usergroup_ranks_rank_is_active" version_id="0" version_string="1.0.0"><![CDATA[Rank is active]]></phrase>
+    <phrase title="3ps_usergroup_ranks_rank_is_disabled_from_listing" version_id="3" version_string="1.5.6"><![CDATA[Rank is disabled from listing]]></phrase>
     <phrase title="3ps_usergroup_ranks_rank_styling_class" version_id="1" version_string="1.1.0"><![CDATA[Rank Styling Class]]></phrase>
     <phrase title="3ps_usergroup_ranks_rank_styling_class_explain" version_id="1" version_string="1.1.0"><![CDATA[CSS Classes that will be applied to this usergroup rank. White space to separate.]]></phrase>
     <phrase title="3ps_usergroup_ranks_rank_type" version_id="0" version_string="1.0.0"><![CDATA[Rank Type]]></phrase>
@@ -446,9 +628,15 @@ Text: Plain text. You may use HTML.]]></phrase>
     <phrase title="3ps_usergroup_ranks_secugs_dsp_higher_any_explain" version_id="1" version_string="1.1.0"><![CDATA[<span class="underlineBold">Any</span> of the user's <span class="underlineBold">secondary</span> user groups have a display style priority higher than]]></phrase>
     <phrase title="3ps_usergroup_ranks_secugs_dsp_lower_all_explain" version_id="1" version_string="1.1.0"><![CDATA[<span class="underlineBold">All</span> of the user's <span class="underlineBold">secondary</span> user groups have a display style priority lower than]]></phrase>
     <phrase title="3ps_usergroup_ranks_secugs_dsp_lower_any_explain" version_id="1" version_string="1.1.0"><![CDATA[<span class="underlineBold">Any</span> of the user's <span class="underlineBold">secondary</span> user groups have a display style priority lower than]]></phrase>
+    <phrase title="3ps_usergroup_ranks_under_avatar" version_id="3" version_string="1.5.6"><![CDATA[Under Avatar]]></phrase>
+    <phrase title="3ps_usergroup_ranks_under_username" version_id="3" version_string="1.5.6"><![CDATA[Under Username]]></phrase>
+    <phrase title="3ps_usergroup_ranks_under_user_title" version_id="3" version_string="1.5.6"><![CDATA[Under User Title]]></phrase>
     <phrase title="3ps_usergroup_ranks_usergroup_rank" version_id="1" version_string="1.1.0"><![CDATA[Usergroup Rank]]></phrase>
     <phrase title="3ps_usergroup_ranks_usergroup_ranks" version_id="1" version_string="1.1.0"><![CDATA[Usergroup Ranks]]></phrase>
     <phrase title="3ps_usergroup_ranks_usergroup_ranks_list" version_id="0" version_string="1.0.0"><![CDATA[Usergroup Ranks]]></phrase>
+    <phrase title="3ps_usergroup_ranks_use_style_attr_for_render" version_id="3" version_string="1.5.6"><![CDATA[Use style attribute for rendering this sprite]]></phrase>
+    <phrase title="3ps_usergroup_ranks_use_style_attr_for_render_explain" version_id="3" version_string="1.5.6"><![CDATA[Check this option to use the style attribute instead of the generated class for sprite rendering. ]]></phrase>
+    <phrase title="3ps_usergroup_ranks_value" version_id="3" version_string="1.5.6"><![CDATA[Value]]></phrase>
     <phrase title="admin_navigation_3ps_usergroupranks" version_id="0" version_string="1.0.0"><![CDATA[User Group Ranks]]></phrase>
     <phrase title="option_3ps_usergroup_ranks_caching_level" version_id="1" version_string="1.1.0"><![CDATA[Caching level]]></phrase>
     <phrase title="option_3ps_usergroup_ranks_caching_level_explain" version_id="1" version_string="1.1.0"><![CDATA[Select the caching level you would like to use for this addon. More aggressive caching will reduce queries needed and loading time, but will put more pressure on the system when you change a setting.<br /><br />
@@ -458,12 +646,21 @@ Level 2: Level 1 plus user rank association caching (recommended for forums with
     <phrase title="option_3ps_usergroup_ranks_display_credit_notice_explain" version_id="1" version_string="1.1.0"><![CDATA[Whether to display an one-line credit notice on your forum's footer, under the standard XenForo copyright notice.<br />
 Please support me by always keeping this box checked. This notice will not display the add-on version. It is fine if you uncheck this option off.<br /><br />
 <span style="font-size:12px; color: #333; font-weight: bold;">This add-on is released under the BSD 2-Clause modified License.</span> While this option can be turned off, you may <span style="font-size:12px; color: #333; font-weight: bold;">NOT</span> remove the footer comment (invisible, separate from the credit notice) <span style="font-size:12px; color: #333; font-weight: bold;">UNDER ANY CIRCUMSTANCES</span> except with written permission. Not obeying this instruction will be considered as violation of the software license and legal action will be taken.]]></phrase>
-    <phrase title="option_3ps_usergroup_ranks_display_style" version_id="0" version_string="1.0.0"><![CDATA[Display Style]]></phrase>
-    <phrase title="option_3ps_usergroup_ranks_display_style_explain" version_id="0" version_string="1.0.0"><![CDATA[Select the place the ranks should be shown.]]></phrase>
+    <phrase title="option_3ps_usergroup_ranks_display_positions" version_id="3" version_string="1.5.6"><![CDATA[Display Positions]]></phrase>
+    <phrase title="option_3ps_usergroup_ranks_display_positions_explain" version_id="3" version_string="1.5.6"><![CDATA[Select the place the ranks should be shown.]]></phrase>
+    <phrase title="option_3ps_usergroup_ranks_enable_ugr_listing" version_id="3" version_string="1.5.6"><![CDATA[Enable Usergroup Ranks Listing]]></phrase>
+    <phrase title="option_3ps_usergroup_ranks_enable_ugr_listing_explain" version_id="3" version_string="1.5.6"><![CDATA[Check this option to enable the Usergroup Ranks Listing page on the Help menu.]]></phrase>
+    <phrase title="option_3ps_usergroup_ranks_max_items_per_row" version_id="3" version_string="1.5.6"><![CDATA[Maximum Rank Items Per Row]]></phrase>
+    <phrase title="option_3ps_usergroup_ranks_max_items_per_row_explain" version_id="3" version_string="1.5.6"><![CDATA[]]></phrase>
     <phrase title="option_3ps_usergroup_ranks_system_active" version_id="1" version_string="1.1.0"><![CDATA[System is active]]></phrase>
     <phrase title="option_3ps_usergroup_ranks_system_active_explain" version_id="1" version_string="1.1.0"><![CDATA[Toggle this option to activate/deactivate Usergroup Ranks display.]]></phrase>
+    <phrase title="option_3ps_usergroup_ranks_ugr_listing_display_options" version_id="3" version_string="1.5.6"><![CDATA[Ranks Display Type]]></phrase>
+    <phrase title="option_3ps_usergroup_ranks_ugr_listing_display_options_explain" version_id="3" version_string="1.5.6"><![CDATA[]]></phrase>
     <phrase title="option_group_3ps_usergroup_ranks" version_id="0" version_string="1.0.0"><![CDATA[[3.studIo] Usergroup Ranks Options]]></phrase>
     <phrase title="option_group_3ps_usergroup_ranks_description" version_id="0" version_string="1.0.0"><![CDATA[]]></phrase>
+    <phrase title="permission_3ps_ugr_canViewUGRListing" version_id="3" version_string="1.5.6"><![CDATA[Can view Usergroup Ranks listing]]></phrase>
+    <phrase title="permission_group_3ps_ugr" version_id="3" version_string="1.5.6"><![CDATA[[3.studIo] Usergroup Ranks]]></phrase>
+    <phrase title="permission_interface_3ps_ugr" version_id="3" version_string="1.5.6"><![CDATA[[3.studIo] Usergroup Ranks]]></phrase>
   </phrases>
   <route_prefixes>
     <route_type type="admin">
@@ -472,31 +669,40 @@ Please support me by always keeping this box checked. This notice will not displ
   </route_prefixes>
   <style_properties/>
   <templates>
-    <template title="3ps_usergroup_ranks.css" version_id="0" version_string=""><![CDATA[.userGroupRanks {
-	list-style-type: none;
+    <template title="3ps_usergroup_ranks.css" version_id="3" version_string="1.5.6"><![CDATA[.userGroupRanks {
+	list-style: none;
 	text-align: center;
 }
 
+.paddedLi li {
+	display: inline;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
 .posPadTop {
-	border-top: 5px solid transparent;
+	padding-top: 5px;
 }
 
 .posPadBottom {
-	border-bottom: 5px solid transparent;	
+	padding-bottom: 5px;	
+}
+
+.postPadMid {
+	padding-top: 1.5px;
+	padding-bottom: 1.5px;
 }]]></template>
-    <template title="3ps_usergroup_ranks_displaybit" version_id="1" version_string="1.1.0"><![CDATA[<xen:require css="3ps_usergroup_ranks.css" />
-<ul class="userGroupRanks posPad{$ugrList_posPad}">
+    <template title="3ps_usergroup_ranks_displaybit" version_id="3" version_string="1.5.6"><![CDATA[<xen:require css="3ps_usergroup_ranks.css" />
+<ul class="userGroupRanks posPad{$posPad}{$extraCSSClasses}" style="{$extraStyleProp}">
 	<xen:foreach loop="$userGroupRanks" value="$userGroupRank">
-		<li {xen:if '{$userGroupRank.rank_styling_class}', 'class="{$userGroupRank.rank_styling_class}"', ''}>
-			<xen:if is="{$userGroupRank.rank_type} === 0">
-				<img src="{$userGroupRank.rank_content}" />
-			<xen:else />
-				{xen:raw $userGroupRank.rank_content}
-			</xen:if>
-		</li>
-			{xen:raw $userGroupRank.content_render}
+		{xen:helper renderrank, $userGroupRank}
 	</xen:foreach>
+</ul>]]></template>
+    <template title="3ps_usergroup_ranks_displaybit_raw" version_id="3" version_string="1.5.6"><![CDATA[<xen:require css="3ps_usergroup_ranks.css" />
+<ul class="userGroupRanks paddedLi posPad{$posPad}{$extraCSSClasses}" style="{$extraStyleProp}">
+	{xen:raw $userGroupRanks}
 </ul>]]></template>
   </templates>
   <bb_code_media_sites/>
+  <template_modifications/>
 </addon>
