@@ -71,9 +71,10 @@ class ThreePointStudio_UsergroupRanks_Model_UsergroupRanks extends XenForo_Model
 				$dr->delete("3ps_ugr_rankDef");
 				if ($option > 0) break;
 			case 3:
-				// Go around DataRegistry because we need LIKE
-				$db->query("DELETE FROM xf_data_registry WHERE data_key LIKE '3ps_ugr_ura_%'");
-				break;
+				$uraList = $db->fetchRow("SELECT data_key FROM xf_data_registry WHERE data_key LIKE '3ps_ugr_ura_%'");
+				foreach ($uraList as $uraEntry) {
+					$dr->delete($uraEntry);
+				}
 		}
 	}
 
